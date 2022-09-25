@@ -1,5 +1,5 @@
 ﻿/*----------------------------------------------------------------
-    Copyright (C) 2017 Senparc
+    Copyright (C) 2022 Senparc
     
     文件名：OAuth2Result.cs
     文件功能描述：获取成员信息返回结果
@@ -19,6 +19,9 @@
     修改标识：Senparc - 20170909
     修改描述：修改注释
 
+    修改标识：Senparc - 20180815
+    修改描述：添加 CorpId 属性
+
 ----------------------------------------------------------------*/
 
 using Senparc.Weixin.Entities;
@@ -27,6 +30,7 @@ namespace Senparc.Weixin.Work.AdvancedAPIs.OAuth2
 {
     /// <summary>
     /// 获取成员信息返回结果
+    /// <para>https://work.weixin.qq.com/api/doc#10975/%E7%BD%91%E9%A1%B5%E6%8E%88%E6%9D%83%E7%99%BB%E5%BD%95%E7%AC%AC%E4%B8%89%E6%96%B9</para>
     /// </summary>
     public class GetUserInfoResult : WorkJsonResult
     {
@@ -53,7 +57,10 @@ namespace Senparc.Weixin.Work.AdvancedAPIs.OAuth2
 
     */
 
-
+        /// <summary>
+        /// 用户所属企业的corpid
+        /// </summary>
+        public string CorpId { get; set; }
         /// <summary>
         /// 员工UserID
         /// </summary>
@@ -81,6 +88,11 @@ namespace Senparc.Weixin.Work.AdvancedAPIs.OAuth2
         /// </summary>
         public int expires_in { get; set; }
 
+        /// <summary>
+        /// 外部联系人id，当且仅当用户是企业的客户，且跟进人在应用的可见范围内时返回。如果是第三方应用调用，针对同一个客户，同一个服务商不同应用获取到的id相同
+        /// <para>https://work.weixin.qq.com/api/doc/90000/90135/91023</para>
+        /// </summary>
+        public string external_userid { get; set; }
     }
 
 

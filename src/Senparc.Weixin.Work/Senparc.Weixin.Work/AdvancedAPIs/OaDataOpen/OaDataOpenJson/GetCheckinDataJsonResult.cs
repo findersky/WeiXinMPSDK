@@ -1,5 +1,5 @@
 ﻿/*----------------------------------------------------------------
-    Copyright (C) 2017 Senparc
+    Copyright (C) 2022 Senparc
     
     文件名：GetCheckinDataJsonResult.cs
     文件功能描述：获取打卡数据返回结果
@@ -7,6 +7,12 @@
     
     创建标识：Senparc - 20170617
 
+
+    修改标识：Senparc - 20191119
+    修改描述：v3.7.103.1 新增“获取打卡数据”接口返回值新增经纬度信息
+
+    修改标识：Senparc - 20210903
+    修改描述：v3.12.501 更新 GetCheckinDataJsonResult.cs，添加标准打卡时间
 
 ----------------------------------------------------------------*/
 
@@ -46,6 +52,10 @@ namespace Senparc.Weixin.Work.AdvancedAPIs.OaDataOpen
         /// </summary>
         public string exception_type { get; set; }
         /// <summary>
+        /// 标准打卡时间。UTC时间戳
+        /// </summary>
+        public long sch_checkin_time { get; set; }
+        /// <summary>
         /// 打卡时间。UTC时间戳
         /// </summary>
         public long checkin_time { get; set; }
@@ -73,5 +83,13 @@ namespace Senparc.Weixin.Work.AdvancedAPIs.OaDataOpen
         /// 打卡的附件media_id，可使用media/get获取附件
         /// </summary>
         public string[] mediaids { get; set; }
+        /// <summary>
+        /// 位置打卡地点纬度，是实际纬度的1000000倍，与腾讯地图一致采用GCJ-02坐标系统标准
+        /// </summary>
+        public int lat { get; set; }
+        /// <summary>
+        /// 位置打卡地点经度，是实际经度的1000000倍，与腾讯地图一致采用GCJ-02坐标系统标准
+        /// </summary>
+        public int lng { get; set; }
     }
 }

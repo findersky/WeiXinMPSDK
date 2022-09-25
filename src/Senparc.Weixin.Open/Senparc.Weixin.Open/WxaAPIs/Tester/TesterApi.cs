@@ -1,7 +1,7 @@
 ﻿#region Apache License Version 2.0
 /*----------------------------------------------------------------
 
-Copyright 2017 Jeffrey Su & Suzhou Senparc Network Technology Co.,Ltd.
+Copyright 2022 Jeffrey Su & Suzhou Senparc Network Technology Co.,Ltd.
 
 Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
 except in compliance with the License. You may obtain a copy of the License at
@@ -19,7 +19,7 @@ Detail: https://github.com/JeffreySu/WeiXinMPSDK/blob/master/license.md
 #endregion Apache License Version 2.0
 
 /*----------------------------------------------------------------
-    Copyright (C) 2017 Senparc
+    Copyright (C) 2022 Senparc
 
     文件名：ModifyDomainApi.cs
     文件功能描述：成员管理接口
@@ -42,9 +42,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Senparc.Weixin.CommonAPIs;
+using Senparc.CO2NET.Extensions;
+using Senparc.NeuChar;
 
 namespace Senparc.Weixin.Open.WxaAPIs
 {
+    [NcApiBind(NeuChar.PlatformType.WeChat_Open,true)]
     public class TesterApi
     {
         #region 同步方法
@@ -107,6 +110,27 @@ namespace Senparc.Weixin.Open.WxaAPIs
         }
 
         /// <summary>
+        /// 【同步接口】获取体验者列表 接口
+        /// </summary>
+        /// <param name="accessToken">authorizer_access_token</param>
+        /// <param name="timeOut"></param>
+        /// <returns></returns>
+        public static MemberAuthJsonResult MemberAuth(string accessToken, int timeOut = Config.TIME_OUT)
+        {
+            var url = string.Format(Config.ApiMpHost + "/wxa/memberauth?access_token={0}", accessToken.AsUrlData());
+
+            object data;
+
+            data = new
+            {
+                action = "get_experiencer"
+            };
+
+            return CommonJsonSend.Send<MemberAuthJsonResult>(null, url, data, CommonJsonSendType.POST, timeOut);
+        }
+
+
+        /// <summary>
         /// 获取公众号/小程序所绑定的开放平台帐号
         /// </summary>
         /// <param name="accessToken"></param>
@@ -123,7 +147,7 @@ namespace Senparc.Weixin.Open.WxaAPIs
         #endregion
 
 
-#if !NET35 && !NET40
+
         #region 异步方法
         /// <summary>
         /// 【异步方法】创建开放平台帐号并绑定公众号/小程序。
@@ -137,11 +161,11 @@ namespace Senparc.Weixin.Open.WxaAPIs
         {
             var urlFormat = Config.ApiMpHost + "/cgi-bin/open/create?access_token={0}";
             var data = new { appid = appId };
-            return await CommonJsonSend.SendAsync<CreateJsonResult>(accessToken, urlFormat, data);
+            return await CommonJsonSend.SendAsync<CreateJsonResult>(accessToken, urlFormat, data).ConfigureAwait(false);
         }
 
         /// <summary>
-        /// 【异步接口】绑定小程序的体验者 接口
+        /// 【异步方法】绑定小程序的体验者 接口
         /// </summary>
         /// <param name="accessToken">authorizer_access_token</param>
         /// <param name="wechatid">微信号</param>
@@ -158,10 +182,10 @@ namespace Senparc.Weixin.Open.WxaAPIs
                 wechatid = wechatid.ToString()
             };
 
-            return await CommonJsonSend.SendAsync<TesterResultJson>(null, url, data, CommonJsonSendType.POST, timeOut);
+            return await CommonJsonSend.SendAsync<TesterResultJson>(null, url, data, CommonJsonSendType.POST, timeOut).ConfigureAwait(false);
         }
         /// <summary>
-        /// 【异步接口】解除绑定小程序的体验者 接口
+        /// 【异步方法】解除绑定小程序的体验者 接口
         /// </summary>
         /// <param name="accessToken">authorizer_access_token</param>
         /// <param name="wechatid">微信号</param>
@@ -178,8 +202,29 @@ namespace Senparc.Weixin.Open.WxaAPIs
                 wechatid = wechatid.ToString()
             };
 
-            return await CommonJsonSend.SendAsync<TesterResultJson>(null, url, data, CommonJsonSendType.POST, timeOut);
+            return await CommonJsonSend.SendAsync<TesterResultJson>(null, url, data, CommonJsonSendType.POST, timeOut).ConfigureAwait(false);
         }
+
+        /// <summary>
+        /// 【异步方法】获取体验者列表 接口
+        /// </summary>
+        /// <param name="accessToken">authorizer_access_token</param>
+        /// <param name="timeOut"></param>
+        /// <returns></returns>
+        public static async Task<MemberAuthJsonResult> MemberAuthAsync(string accessToken, int timeOut = Config.TIME_OUT)
+        {
+            var url = string.Format(Config.ApiMpHost + "/wxa/memberauth?access_token={0}", accessToken.AsUrlData());
+
+            object data;
+
+            data = new
+            {
+                action = "get_experiencer"
+            };
+
+            return await CommonJsonSend.SendAsync<MemberAuthJsonResult>(null, url, data, CommonJsonSendType.POST, timeOut).ConfigureAwait(false);
+        }
+
 
         /// <summary>
         /// 获取公众号/小程序所绑定的开放平台帐号
@@ -192,10 +237,9 @@ namespace Senparc.Weixin.Open.WxaAPIs
         {
             var urlFormat = Config.ApiMpHost + "/cgi-bin/open/get?access_token={0}";
             var data = new { appid = appId };
-            return await CommonJsonSend.SendAsync<GetJsonResult>(accessToken, urlFormat, data);
+            return await CommonJsonSend.SendAsync<GetJsonResult>(accessToken, urlFormat, data).ConfigureAwait(false);
         }
 
         #endregion
-#endif
     }
 }

@@ -1,5 +1,5 @@
 ﻿/*----------------------------------------------------------------
-    Copyright (C) 2017 Senparc
+    Copyright (C) 2022 Senparc
 
     文件名：UserInfoJson.cs
     文件功能描述：获取用户信息返回结果
@@ -24,8 +24,22 @@
 
     修改标识：Senparc - 20150727
     修改描述：添加批量获取用户基本信息返回结果
+
+    修改标识：Senparc - 20150727
+    修改描述：添加批量获取用户基本信息返回结果
+
+    修改标识：Senparc - 20190601
+    修改描述：qr_scene 属性改为 uint 类型
+
+    修改标识：Senparc - 20210930
+    修改描述：v16.15.500 用户信息调整：不再返回用户性别及地区信息
+
+    修改标识：Senparc - 20211209
+    修改描述：v16.17.3 UserApi.Info() 接口返回值，将 headimgurl、nickname 设为过期（2021年12月27日起无返回值）
+
 ----------------------------------------------------------------*/
 
+using System;
 using System.Collections.Generic;
 using Senparc.Weixin.Entities;
 
@@ -34,10 +48,11 @@ namespace Senparc.Weixin.MP.AdvancedAPIs.User
     /// <summary>
     /// 高级接口获取的用户信息
     /// </summary>
-    public class UserInfoJson : WxJsonResult
+    public class UserInfoJson : WxJsonResult, IUserInfo, IUserSubscribe
     {
         /// <summary>
         /// 用户是否订阅该公众号标识，值为0时，代表此用户没有关注该公众号，拉取不到其余信息。
+        /// <para>请注意：2021年12月27日以后，相关接口不再返回头像、昵称信息：<see href="https://developers.weixin.qq.com/doc/offiaccount/User_Management/Get_users_basic_information_UnionID.html#UinonId"/></para>
         /// </summary>
         public int subscribe { get; set; }
         /// <summary>
@@ -47,10 +62,12 @@ namespace Senparc.Weixin.MP.AdvancedAPIs.User
         /// <summary>
         /// 用户的昵称
         /// </summary>
+        [Obsolete("https://developers.weixin.qq.com/doc/offiaccount/User_Management/Get_users_basic_information_UnionID.html#UinonId")]
         public string nickname { get; set; }
         /// <summary>
         /// 用户的性别，值为1时是男性，值为2时是女性，值为0时是未知
         /// </summary>
+        [Obsolete("https://mp.weixin.qq.com/cgi-bin/announce?action=getannouncement&announce_id=11632637451RQs8y")]
         public int sex { get; set; }
         /// <summary>
         ///用户的语言，简体中文为zh_CN
@@ -59,18 +76,22 @@ namespace Senparc.Weixin.MP.AdvancedAPIs.User
         /// <summary>
         /// 用户所在城市
         /// </summary>
+        [Obsolete("https://mp.weixin.qq.com/cgi-bin/announce?action=getannouncement&announce_id=11632637451RQs8y")]
         public string city { get; set; }
         /// <summary>
         /// 用户所在省份
         /// </summary>
+        [Obsolete("https://mp.weixin.qq.com/cgi-bin/announce?action=getannouncement&announce_id=11632637451RQs8y")]
         public string province { get; set; }
         /// <summary>
         /// 用户所在国家
         /// </summary>
+        [Obsolete("https://mp.weixin.qq.com/cgi-bin/announce?action=getannouncement&announce_id=11632637451RQs8y")]
         public string country { get; set; }
         /// <summary>
         /// 用户头像，最后一个数值代表正方形头像大小（有0、46、64、96、132数值可选，0代表640*640正方形头像），用户没有头像时该项为空。若用户更换头像，原有头像URL将失效。
         /// </summary>
+        [Obsolete("https://developers.weixin.qq.com/doc/offiaccount/User_Management/Get_users_basic_information_UnionID.html#UinonId")]
         public string headimgurl { get; set; }
         /// <summary>
         /// 用户关注时间，为时间戳。如果用户曾多次关注，则取最后关注时间
@@ -92,6 +113,18 @@ namespace Senparc.Weixin.MP.AdvancedAPIs.User
         /// 用户标签
         /// </summary>
         public int[] tagid_list { get; set; }
+        /// <summary>
+        /// 返回用户关注的渠道来源，ADD_SCENE_SEARCH 公众号搜索，ADD_SCENE_ACCOUNT_MIGRATION 公众号迁移，ADD_SCENE_PROFILE_CARD 名片分享，ADD_SCENE_QR_CODE 扫描二维码，ADD_SCENEPROFILE LINK 图文页内名称点击，ADD_SCENE_PROFILE_ITEM 图文页右上角菜单，ADD_SCENE_PAID 支付后关注，ADD_SCENE_OTHERS 其他
+        /// </summary>
+        public string subscribe_scene { get; set; }
+        /// <summary>
+        /// 二维码扫码场景（开发者自定义）
+        /// </summary>
+        public uint qr_scene { get; set; }
+        /// <summary>
+        /// 二维码扫码场景描述（开发者自定义）
+        /// </summary>
+        public string qr_scene_str { get; set; }
     }
 
     /// <summary>

@@ -1,7 +1,7 @@
 ﻿#region Apache License Version 2.0
 /*----------------------------------------------------------------
 
-Copyright 2017 Jeffrey Su & Suzhou Senparc Network Technology Co.,Ltd.
+Copyright 2022 Jeffrey Su & Suzhou Senparc Network Technology Co.,Ltd.
 
 Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
 except in compliance with the License. You may obtain a copy of the License at
@@ -19,21 +19,27 @@ Detail: https://github.com/JeffreySu/WeiXinMPSDK/blob/master/license.md
 #endregion Apache License Version 2.0
 
 /*----------------------------------------------------------------
-    Copyright (C) 2017 Senparc
+    Copyright (C) 2022 Senparc
     
     文件名：SingleMediaIdButton.cs
     文件功能描述：下发消息（除文本消息）按钮
     
     
     创建标识：Senparc - 20170824
+
+    修改标识：Senparc - 20181005
+    修改描述：菜单按钮类型（ButtonType）改为使用 Senparc.NeuChar.MenuButtonType
     
 ----------------------------------------------------------------*/
+using Senparc.NeuChar;
+using System;
 
 namespace Senparc.Weixin.MP.Entities.Menu
 {
     /// <summary>
     /// 下发消息（除文本消息）按钮
     /// </summary>
+    [Obsolete("草稿接口灰度完成后，将不再支持图文信息类型的 media_id 和 view_limited，有需要的，请使用 article_id 和 article_view_limited 代替")]
     public class SingleMediaIdButton : SingleButton
     {
         /// <summary>
@@ -42,7 +48,7 @@ namespace Senparc.Weixin.MP.Entities.Menu
         public string media_id { get; set; }
 
         public SingleMediaIdButton()
-            : base(ButtonType.media_id.ToString())
+            : base(MenuButtonType.media_id.ToString())
         {
         }
     }

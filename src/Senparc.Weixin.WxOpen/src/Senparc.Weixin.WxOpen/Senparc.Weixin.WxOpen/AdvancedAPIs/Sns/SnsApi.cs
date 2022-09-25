@@ -1,7 +1,7 @@
 ﻿#region Apache License Version 2.0
 /*----------------------------------------------------------------
 
-Copyright 2017 Jeffrey Su & Suzhou Senparc Network Technology Co.,Ltd.
+Copyright 2022 Jeffrey Su & Suzhou Senparc Network Technology Co.,Ltd.
 
 Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
 except in compliance with the License. You may obtain a copy of the License at
@@ -19,10 +19,10 @@ Detail: https://github.com/JeffreySu/WeiXinMPSDK/blob/master/license.md
 #endregion Apache License Version 2.0
 
 /*----------------------------------------------------------------
-    Copyright (C) 2017 Senparc
+    Copyright (C) 2022 Senparc
     
     文件名：SnsApi.cs
-    文件功能描述：小程序Sns下接口
+    文件功能描述：小程序 Sns下接口
     
     创建标识：Senparc - 20170105
 ----------------------------------------------------------------*/
@@ -30,9 +30,10 @@ Detail: https://github.com/JeffreySu/WeiXinMPSDK/blob/master/license.md
 using System;
 using System.IO;
 using System.Threading.Tasks;
+using Senparc.NeuChar;
+using Senparc.Weixin.CommonAPIs;
 using Senparc.Weixin.Entities;
 using Senparc.Weixin.HttpUtility;
-using Senparc.Weixin.WxOpen.AdvancedAPIs.Template.TemplateJson;
 
 namespace Senparc.Weixin.WxOpen.AdvancedAPIs.Sns
 {
@@ -45,6 +46,7 @@ namespace Senparc.Weixin.WxOpen.AdvancedAPIs.Sns
     /// <summary>
     /// WxApp接口
     /// </summary>
+    [NcApiBind(NeuChar.PlatformType.WeChat_MiniProgram, true)]
     public static class SnsApi
     {
         #region 同步方法
@@ -64,13 +66,13 @@ namespace Senparc.Weixin.WxOpen.AdvancedAPIs.Sns
                 Config.ApiMpHost + "/sns/jscode2session?appid={0}&secret={1}&js_code={2}&grant_type={3}";
 
             var url = string.Format(urlFormat, appId, secret, jsCode, grantType);
-            var result = Get.GetJson<JsCode2JsonResult>(url);
+            var result = CommonJsonSend.Send<JsCode2JsonResult>(null, url, null, CommonJsonSendType.GET);
             return result;
         }
 
         #endregion
 
-#if !NET35 && !NET40
+
         #region 异步方法
 
         /// <summary>
@@ -89,11 +91,10 @@ namespace Senparc.Weixin.WxOpen.AdvancedAPIs.Sns
 
             var url = string.Format(urlFormat, appId, secret, jsCode, grantType);
 
-            var result = await Get.GetJsonAsync<JsCode2JsonResult>(url);
+            var result = await CommonJsonSend.SendAsync<JsCode2JsonResult>(null, url, null, CommonJsonSendType.GET).ConfigureAwait(false);
             return result;
         }
 
         #endregion
-#endif
     }
 }

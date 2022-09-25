@@ -1,4 +1,6 @@
-﻿namespace Senparc.Weixin.Work.Entities.Request.KF
+﻿using Senparc.NeuChar;
+
+namespace Senparc.Weixin.Work.Entities.Request.KF
 {
     public class RequestEvent : RequestBase
     {
@@ -6,6 +8,6 @@
         {
             this.MsgType = RequestMsgType.Event;
         }
-        public Event Event { get; set; }
+        public Senparc.Weixin.Work.Event Event { get; set; }
     }
 }

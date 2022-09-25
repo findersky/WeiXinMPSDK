@@ -1,7 +1,7 @@
 ﻿#region Apache License Version 2.0
 /*----------------------------------------------------------------
 
-Copyright 2017 Jeffrey Su & Suzhou Senparc Network Technology Co.,Ltd.
+Copyright 2022 Jeffrey Su & Suzhou Senparc Network Technology Co.,Ltd.
 
 Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
 except in compliance with the License. You may obtain a copy of the License at
@@ -19,7 +19,7 @@ Detail: https://github.com/JeffreySu/WeiXinMPSDK/blob/master/license.md
 #endregion Apache License Version 2.0
 
 /*----------------------------------------------------------------
-    Copyright (C) 2017 Senparc
+    Copyright (C) 2022 Senparc
     
     文件名：CommonApi.Menu.Custom.cs
     文件功能描述：通用自定义菜单接口（自定义接口）
@@ -41,6 +41,9 @@ Detail: https://github.com/JeffreySu/WeiXinMPSDK/blob/master/license.md
 
     修改标识：IsaacXu - 20151222
     修改描述：添加CreateMenu重写方法
+
+    修改标识：Senparc - 20180928
+    修改描述：添加GetCurrentSelfMenuInfo方法
 ----------------------------------------------------------------*/
 
 /*
@@ -49,21 +52,26 @@ Detail: https://github.com/JeffreySu/WeiXinMPSDK/blob/master/license.md
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
+using Senparc.CO2NET.Extensions;
+using Senparc.CO2NET.HttpUtility;
 using Senparc.Weixin.Entities;
 using Senparc.Weixin.Exceptions;
-using Senparc.Weixin.HttpUtility;
 using Senparc.Weixin.MP.Entities;
 using Senparc.Weixin.MP.Entities.Menu;
+using Senparc.NeuChar;
+using System.Threading.Tasks;
+using Senparc.Weixin.CommonAPIs;
+using Senparc.CO2NET.Helpers;
 
-#if NET35 || NET40 || NET45
+#if NET462
 using System.Web.Script.Serialization;
 #endif
 
 
 namespace Senparc.Weixin.MP.CommonAPIs
 {
+    [NcApiBind(NeuChar.PlatformType.WeChat_OfficialAccount,true)]
     public partial class CommonApi
     {
         ///// <summary>
@@ -82,6 +90,7 @@ namespace Senparc.Weixin.MP.CommonAPIs
         /// </summary>
         /// <param name="accessTokenOrAppId">AccessToken或AppId。当为AppId时，如果AccessToken错误将自动获取一次。当为null时，获取当前注册的第一个AppId。</param>
         /// <param name="buttonData">菜单内容</param>
+        /// <param name="timeOut"></param>
         /// <returns></returns>
         public static WxJsonResult CreateMenu(string accessTokenOrAppId, ButtonGroup buttonData, int timeOut = Config.TIME_OUT)
         {
@@ -112,6 +121,7 @@ namespace Senparc.Weixin.MP.CommonAPIs
         /// </summary>
         /// <param name="accessTokenOrAppId">AccessToken或AppId。当为AppId时，如果AccessToken错误将自动获取一次。当为null时，获取当前注册的第一个AppId。</param>
         /// <param name="buttonData">菜单内容</param>
+        /// <param name="timeOut"></param>
         /// <returns></returns>
         public static WxJsonResult CreateMenu(string accessTokenOrAppId, object buttonData, int timeOut = Config.TIME_OUT)
         {
@@ -130,6 +140,7 @@ namespace Senparc.Weixin.MP.CommonAPIs
         /// <param name="objs"></param>
         /// <returns></returns>
         [Obsolete("配合GetMenuFromJson方法使用")]
+        [NcApiBind(NeuChar.PlatformType.WeChat_OfficialAccount,true)]
         private static SingleClickButton GetSingleButtonFromJsonObject(Dictionary<string, object> objs)
         {
             var sb = new SingleClickButton()
@@ -155,14 +166,7 @@ namespace Senparc.Weixin.MP.CommonAPIs
             try
             {
                 //@"{""menu"":{""button"":[{""type"":""click"",""name"":""单击测试"",""key"":""OneClick"",""sub_button"":[]},{""name"":""二级菜单"",""sub_button"":[{""type"":""click"",""name"":""返回文本"",""key"":""SubClickRoot_Text"",""sub_button"":[]},{""type"":""click"",""name"":""返回图文"",""key"":""SubClickRoot_News"",""sub_button"":[]},{""type"":""click"",""name"":""返回音乐"",""key"":""SubClickRoot_Music"",""sub_button"":[]}]}]}}"
-                object jsonResult = null;
-
-#if NET35 || NET40 || NET45
-                JavaScriptSerializer js = new JavaScriptSerializer();
-                jsonResult = js.Deserialize<object>(jsonString);
-#else
-                jsonResult = Newtonsoft.Json.JsonConvert.DeserializeObject<object>(jsonString);
-#endif
+                object jsonResult = SerializerHelper.GetObject<object>(jsonString);
 
                 var fullResult = jsonResult as Dictionary<string, object>;
                 if (fullResult != null && fullResult.ContainsKey("menu"))
@@ -223,14 +227,14 @@ namespace Senparc.Weixin.MP.CommonAPIs
             {
                 var url = string.Format(Config.ApiMpHost + "/cgi-bin/menu/get?access_token={0}", accessToken.AsUrlData());
 
-                var jsonString = RequestUtility.HttpGet(url, Encoding.UTF8);
+                var jsonString = RequestUtility.HttpGet(CommonDI.CommonSP, url, Encoding.UTF8);
                 //var finalResult = GetMenuFromJson(jsonString);
 
                 GetMenuResult finalResult;
                 try
                 {
 
-#if NET35 || NET40 || NET45
+#if NET462
                     JavaScriptSerializer js = new JavaScriptSerializer();
                     var jsonResult = js.Deserialize<GetMenuResultFull>(jsonString);
 #else
@@ -264,7 +268,7 @@ namespace Senparc.Weixin.MP.CommonAPIs
         /// <summary>
         /// 删除菜单
         /// </summary>
-        /// <param name="accessToken"></param>
+        /// <param name="accessTokenOrAppId"></param>
         /// <returns></returns>
         public static WxJsonResult DeleteMenu(string accessTokenOrAppId)
         {
@@ -272,10 +276,56 @@ namespace Senparc.Weixin.MP.CommonAPIs
             {
                 var url = string.Format(Config.ApiMpHost + "/cgi-bin/menu/delete?access_token={0}", accessToken.AsUrlData());
 
-                return Get.GetJson<WxJsonResult>(url);
+                return CommonJsonSend.Send<WxJsonResult>(null, url, null, CommonJsonSendType.GET);
 
             }, accessTokenOrAppId);
 
         }
+
+        #region 同步方法
+
+        /// <summary>
+        /// 获取自定义菜单配置接口
+        /// </summary>
+        /// <param name="accessTokenOrAppId"></param>
+        /// <param name="timeOut"></param>
+        /// <returns></returns>
+        public static SelfMenuConfigResult GetCurrentSelfMenuInfo(string accessTokenOrAppId, int timeOut = Config.TIME_OUT)
+        {
+            return ApiHandlerWapper.TryCommonApi(accessToken =>
+            {
+                var url = string.Format(Config.ApiMpHost + "/cgi-bin/get_current_selfmenu_info?access_token={0}", accessToken.AsUrlData());
+
+                return CommonJsonSend.Send<SelfMenuConfigResult>(null, url, null, CommonJsonSendType.GET, timeOut: timeOut);
+
+            }, accessTokenOrAppId);
+
+        }
+
+        #endregion
+
+
+
+        #region 异步方法
+
+        /// <summary>
+        /// 【异步方法】获取自定义菜单配置接口
+        /// </summary>
+        /// <param name="accessTokenOrAppId"></param>
+        /// <param name="timeOut"></param>
+        /// <returns></returns>
+        public static async Task<SelfMenuConfigResult> GetCurrentSelfMenuInfoAsync(string accessTokenOrAppId, int timeOut = Config.TIME_OUT)
+        {
+            return await ApiHandlerWapper.TryCommonApiAsync(async accessToken =>
+            {
+                var url = string.Format(Config.ApiMpHost + "/cgi-bin/get_current_selfmenu_info?access_token={0}", accessToken.AsUrlData());
+                
+                return await CommonJsonSend.SendAsync<SelfMenuConfigResult>(null, url, null, CommonJsonSendType.GET, timeOut: timeOut).ConfigureAwait(false);
+
+            }, accessTokenOrAppId).ConfigureAwait(false);
+
+        }
+
+        #endregion
     }
 }

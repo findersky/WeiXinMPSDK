@@ -1,7 +1,7 @@
 ﻿#region Apache License Version 2.0
 /*----------------------------------------------------------------
 
-Copyright 2017 Jeffrey Su & Suzhou Senparc Network Technology Co.,Ltd.
+Copyright 2022 Jeffrey Su & Suzhou Senparc Network Technology Co.,Ltd.
 
 Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
 except in compliance with the License. You may obtain a copy of the License at
@@ -19,25 +19,35 @@ Detail: https://github.com/JeffreySu/WeiXinMPSDK/blob/master/license.md
 #endregion Apache License Version 2.0
 
 /*----------------------------------------------------------------
-    Copyright (C) 2017 Senparc
+    Copyright (C) 2022 Senparc
     
-    文件名：MessageHandler.Event.cs
+    文件名：MessageHandler.Message.cs
     文件功能描述：微信请求的集中处理方法：Message相关
     
     
     创建标识：Senparc - 20150924
-    
+  
+    修改标识：Senparc - 20180829
+    修改描述：v15.4.0 支持NeuChar，添加 OnNeuCharRequest() 方法
+
 ----------------------------------------------------------------*/
 
 using System;
 using Senparc.Weixin.Exceptions;
-using Senparc.Weixin.Helpers.Extensions;
+using Senparc.CO2NET.Extensions;
 using Senparc.Weixin.MP.Entities;
 using Senparc.Weixin.MP.Helpers;
+using Senparc.CO2NET.Helpers;
+using Senparc.NeuChar;
+using Senparc.CO2NET.Trace;
+using System.IO;
+using Senparc.CO2NET.Utilities;
+using Senparc.NeuChar.Entities;
+using Senparc.NeuChar.Helpers;
 
 namespace Senparc.Weixin.MP.MessageHandlers
 {
-    public abstract partial class MessageHandler<TC>
+    public abstract partial class MessageHandler<TMC>
     {
         #region 默认方法及未知类型方法
 
@@ -90,7 +100,7 @@ namespace Senparc.Weixin.MP.MessageHandlers
             return DefaultResponseMessage(requestMessage);
         }
 
-        /// <summary>
+         /// <summary>
         /// 位置类型请求
         /// </summary>
         public virtual IResponseMessageBase OnLocationRequest(RequestMessageLocation requestMessage)
@@ -136,6 +146,15 @@ namespace Senparc.Weixin.MP.MessageHandlers
         /// 小视频类型请求
         /// </summary>
         public virtual IResponseMessageBase OnShortVideoRequest(RequestMessageShortVideo requestMessage)
+        {
+            return DefaultResponseMessage(requestMessage);
+        }
+
+
+        /// <summary>
+        /// 文件请求
+        /// </summary>
+        public virtual IResponseMessageBase OnFileRequest(RequestMessageFile requestMessage)
         {
             return DefaultResponseMessage(requestMessage);
         }

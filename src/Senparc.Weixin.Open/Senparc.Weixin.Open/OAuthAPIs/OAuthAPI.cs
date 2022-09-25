@@ -1,5 +1,5 @@
 ﻿/*----------------------------------------------------------------
-    Copyright (C) 2017 Senparc
+    Copyright (C) 2022 Senparc
     
     文件名：OAuthAPI.cs
     文件功能描述：OAuth
@@ -13,6 +13,9 @@
     修改标识：Senparc - 20160720
     修改描述：增加其接口的异步方法
  
+    修改标识：Senparc - 20210720
+    修改描述：v4.10.3 统一使用 Senparc.Weixin.CommonAPIs.CommonJsonSend 方法
+ 
 ----------------------------------------------------------------*/
 
 /*
@@ -21,18 +24,21 @@
 
 using System.Linq;
 using System.Threading.Tasks;
+using Senparc.CO2NET.Extensions;
+using Senparc.NeuChar;
+using Senparc.Weixin.CommonAPIs;
 using Senparc.Weixin.HttpUtility;
-using Senparc.Weixin.Open.CommonAPIs;
 
 namespace Senparc.Weixin.Open.OAuthAPIs
 {
     /// <summary>
     /// 代公众号发起网页授权
     /// </summary>
+    [NcApiBind(NeuChar.PlatformType.WeChat_Open,true)]
     public static class OAuthApi
     {
         #region 同步方法
-       /*此接口不提供异步方法*/
+        /*此接口不提供异步方法*/
         /// <summary>
         /// 获取验证地址
         /// </summary>
@@ -127,6 +133,7 @@ namespace Senparc.Weixin.Open.OAuthAPIs
         ///// <param name="accessToken"></param>
         ///// <param name="openId">用户的唯一标识</param>
         ///// <returns></returns>
+        //[IgnoreApiBind]
         //public static WxJsonResult Auth(string accessToken, string openId)
         //{
         //    var url = string.Format(Config.ApiMpHost + "/sns/auth?access_token={0}&openid={1}", accessToken.AsUrlData(), openId.AsUrlData());
@@ -134,9 +141,9 @@ namespace Senparc.Weixin.Open.OAuthAPIs
         //}
         #endregion
 
-#if !NET35 && !NET40
+
         #region 异步方法
-        
+
         /// <summary>
         /// 【异步方法】获取AccessToken
         /// </summary>
@@ -163,7 +170,7 @@ namespace Senparc.Weixin.Open.OAuthAPIs
             
             出错返回：{"errcode":40029,"errmsg":"invalid code"}
             */
-            return await Senparc .Weixin .CommonAPIs .CommonJsonSend.SendAsync<OAuthAccessTokenResult>(null, url, null, CommonJsonSendType.GET);
+            return await Senparc.Weixin.CommonAPIs.CommonJsonSend.SendAsync<OAuthAccessTokenResult>(null, url, null, CommonJsonSendType.GET).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -180,7 +187,7 @@ namespace Senparc.Weixin.Open.OAuthAPIs
             var url = string.Format(Config.ApiMpHost + "/sns/oauth2/component/refresh_token?appid={0}&grant_type={1}&component_appid={2}&component_access_token={3}&refresh_token={4}",
                                 appId.AsUrlData(), grantType.AsUrlData(), componentAppid.AsUrlData(), componentAccessToken.AsUrlData(), refreshToken.AsUrlData());
 
-            return await Senparc.Weixin.CommonAPIs.CommonJsonSend.SendAsync<OAuthAccessTokenResult>(null, url, null, CommonJsonSendType.GET);
+            return await Senparc.Weixin.CommonAPIs.CommonJsonSend.SendAsync<OAuthAccessTokenResult>(null, url, null, CommonJsonSendType.GET).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -197,7 +204,7 @@ namespace Senparc.Weixin.Open.OAuthAPIs
              期望返回：{    "openid":" OPENID",    " nickname": NICKNAME,    "sex":"1",    "province":"PROVINCE"    "city":"CITY",    "country":"COUNTRY",     "headimgurl":    "http://wx.qlogo.cn/mmopen/g3MonUZtNHkdmzicIlibx6iaFqAc56vxLSUfpb6n5WKSYVY0ChQKkiaJSgQ1dZuTOgvLLrhJbERQQ4eMsv84eavHiaiceqxibJxCfHe/46",  "privilege":[ "PRIVILEGE1" "PRIVILEGE2"     ],     "unionid": "o6_bmasdasdsad6_2sgVt7hMZOPfL" }
              错误时微信会返回JSON数据包如下（示例为openid无效）:{"errcode":40003,"errmsg":" invalid openid "}
              */
-            return await Senparc.Weixin.CommonAPIs.CommonJsonSend.SendAsync<OAuthUserInfo>(null, url, null, CommonJsonSendType.GET);
+            return await Senparc.Weixin.CommonAPIs.CommonJsonSend.SendAsync<OAuthUserInfo>(null, url, null, CommonJsonSendType.GET).ConfigureAwait(false);
         }
 
         //下面的方法在MP中有提供，开放平台的官方文档未提及
@@ -207,12 +214,12 @@ namespace Senparc.Weixin.Open.OAuthAPIs
         ///// <param name="accessToken"></param>
         ///// <param name="openId">用户的唯一标识</param>
         ///// <returns></returns>
+        //[IgnoreApiBind]
         //public static WxJsonResult Auth(string accessToken, string openId)
         //{
         //    var url = string.Format(Config.ApiMpHost + "/sns/auth?access_token={0}&openid={1}", accessToken.AsUrlData(), openId.AsUrlData());
         //    return CommonJsonSend.Send<WxJsonResult>(null, url, null, CommonJsonSendType.GET);
         //}
         #endregion
-#endif
     }
 }

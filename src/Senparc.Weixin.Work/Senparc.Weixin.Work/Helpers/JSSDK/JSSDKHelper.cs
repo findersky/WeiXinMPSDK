@@ -1,5 +1,5 @@
 ﻿/*----------------------------------------------------------------
-    Copyright (C) 2017 Senparc
+    Copyright (C) 2022 Senparc
     
     文件名：JSSDKHelper.cs
     文件功能描述：JSSDK生成签名的方法等
@@ -19,10 +19,13 @@
 
 ----------------------------------------------------------------*/
 
+using Senparc.CO2NET.Helpers;
 using Senparc.Weixin.Helpers;
+using Senparc.Weixin.Work.Containers;
 using System;
 using System.Collections;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace Senparc.Weixin.Work.Helpers
 {
@@ -46,7 +49,7 @@ namespace Senparc.Weixin.Work.Helpers
         /// <returns></returns>
         public static long GetTimestamp()
         {
-            TimeSpan ts = DateTime.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0, 0);
+            TimeSpan ts = DateTimeOffset.Now - new DateTimeOffset(1970, 1, 1, 0, 0, 0, 0, TimeSpan.Zero);
             return Convert.ToInt64(ts.TotalSeconds);
         }
 
@@ -65,9 +68,25 @@ namespace Senparc.Weixin.Work.Helpers
              .Append("noncestr=").Append(noncestr).Append("&")
              .Append("timestamp=").Append(timestamp).Append("&")
              .Append("url=").Append(url.IndexOf("#") >= 0 ? url.Substring(0, url.IndexOf("#")) : url);
-            return SHA1UtilHelper.GetSha1(sb.ToString()).ToLower();
+            return EncryptHelper.GetSha1(sb.ToString()).ToLower();
         }
 
+        /// <summary>
+        /// 获取给 JsApi UI 使用的打包签名信息
+        /// </summary>
+        /// <param name="appId"></param>
+        /// <param name="prepayId"></param>
+        /// <returns></returns>
+        public static async Task<JsApiUiPackage> GetJsApiUiPackageAsync(string appId, string secret, string url,string jsApiTicket,bool isAgentConfig)
+        {
+            var nonceStr = GetNoncestr();
+            var timeStamp = GetTimestamp();
+            jsApiTicket ??= await JsApiTicketContainer.GetTicketAsync(appId, secret, isAgentConfig);
+            var sign = GetSignature(jsApiTicket, nonceStr, timeStamp, url);
+
+            JsApiUiPackage jsApiUiPackage = new(appId, timeStamp.ToString(), nonceStr, sign);
+            return jsApiUiPackage;
+        }
 
     }
 }

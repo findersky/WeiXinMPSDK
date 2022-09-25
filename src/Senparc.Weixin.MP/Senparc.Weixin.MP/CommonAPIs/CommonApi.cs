@@ -1,7 +1,7 @@
 ﻿#region Apache License Version 2.0
 /*----------------------------------------------------------------
 
-Copyright 2017 Jeffrey Su & Suzhou Senparc Network Technology Co.,Ltd.
+Copyright 2022 Jeffrey Su & Suzhou Senparc Network Technology Co.,Ltd.
 
 Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
 except in compliance with the License. You may obtain a copy of the License at
@@ -19,7 +19,7 @@ Detail: https://github.com/JeffreySu/WeiXinMPSDK/blob/master/license.md
 #endregion Apache License Version 2.0
 
 /*----------------------------------------------------------------
-    Copyright (C) 2017 Senparc
+    Copyright (C) 2022 Senparc
     
     文件名：CommonApi.cs
     文件功能描述：通用接口(用于和微信服务器通讯，一般不涉及自有网站服务器的通讯)
@@ -48,6 +48,16 @@ Detail: https://github.com/JeffreySu/WeiXinMPSDK/blob/master/license.md
     修改标识：Senparc - 20170707
     修改描述：v14.5.1 完善异步方法async/await
 
+    修改标识：Senparc - 20180928
+    修改描述：添加Clear_quota
+
+    修改标识：Senparc - 20191206
+    修改描述：CommonApi.Token() 方法设置异常抛出机制
+
+    修改标识：wtujvk - 20200416
+    修改描述：v16.10.500 提供详细 CommonApi.GetToken() 报错信息（包括白名单异常）
+
+
 ----------------------------------------------------------------*/
 
 /*
@@ -55,10 +65,15 @@ Detail: https://github.com/JeffreySu/WeiXinMPSDK/blob/master/license.md
     
  */
 
-using System.Threading.Tasks;
-using Senparc.Weixin.HttpUtility;
+using Senparc.CO2NET.Extensions;
+using Senparc.CO2NET.HttpUtility;
+using Senparc.NeuChar;
+using Senparc.Weixin.CommonAPIs;
+using Senparc.Weixin.Entities;
+using Senparc.Weixin.Exceptions;
 using Senparc.Weixin.MP.Containers;
 using Senparc.Weixin.MP.Entities;
+using System.Threading.Tasks;
 
 namespace Senparc.Weixin.MP.CommonAPIs
 {
@@ -66,6 +81,7 @@ namespace Senparc.Weixin.MP.CommonAPIs
     /// 通用接口
     /// 通用接口用于和微信服务器通讯，一般不涉及自有网站服务器的通讯
     /// </summary>
+    [NcApiBind(NeuChar.PlatformType.WeChat_OfficialAccount, true)]
     public partial class CommonApi
     {
         #region 同步方法
@@ -77,33 +93,43 @@ namespace Senparc.Weixin.MP.CommonAPIs
         /// <param name="appid">第三方用户唯一凭证</param>
         /// <param name="secret">第三方用户唯一凭证密钥，既appsecret</param>
         /// <returns></returns>
+        [NcApiBind(NeuChar.PlatformType.WeChat_OfficialAccount, "CommonApi.GetToken", false, ApiRequestMethod = CO2NET.WebApi.ApiRequestMethod.Get)]
         public static AccessTokenResult GetToken(string appid, string secret, string grant_type = "client_credential")
         {
             //注意：此方法不能再使用ApiHandlerWapper.TryCommonApi()，否则会循环
             var url = string.Format(Config.ApiMpHost + "/cgi-bin/token?grant_type={0}&appid={1}&secret={2}",
                                     grant_type.AsUrlData(), appid.AsUrlData(), secret.AsUrlData());
 
-            AccessTokenResult result = Get.GetJson<AccessTokenResult>(url);
+            AccessTokenResult result = Get.GetJson<AccessTokenResult>(CommonDI.CommonSP, url);//此处为最原始接口，不再使用重试获取的封装
+
+            if (Config.ThrownWhenJsonResultFaild && result.errcode != ReturnCode.请求成功)
+            {
+                throw new ErrorJsonResultException(
+                    string.Format("微信请求发生错误（CommonApi.GetToken）！错误代码：{0}，说明：{1}",
+                        (int)result.errcode, result.errmsg), null, result);
+            }
+
             return result;
         }
 
-        /// <summary>
-        /// 用户信息接口
-        /// </summary>
-        /// <param name="accessTokenOrAppId">AccessToken或AppId（推荐使用AppId，需要先注册）</param>
-        /// <param name="openId"></param>
-        /// <returns></returns>
-        public static WeixinUserInfoResult GetUserInfo(string accessTokenOrAppId, string openId)
-        {
-            return ApiHandlerWapper.TryCommonApi(accessToken =>
-            {
-                var url = string.Format(Config.ApiMpHost + "/cgi-bin/user/info?access_token={0}&openid={1}",
-                                        accessToken.AsUrlData(), openId.AsUrlData());
-                WeixinUserInfoResult result = Get.GetJson<WeixinUserInfoResult>(url);
-                return result;
+        //已经迁移到 UserApi 下
+        ///// <summary>
+        ///// 用户信息接口
+        ///// </summary>
+        ///// <param name="accessTokenOrAppId">AccessToken或AppId（推荐使用AppId，需要先注册）</param>
+        ///// <param name="openId"></param>
+        ///// <returns></returns>
+        //public static WeixinUserInfoResult GetUserInfo(string accessTokenOrAppId, string openId)
+        //{
+        //    return ApiHandlerWapper.TryCommonApi(accessToken =>
+        //    {
+        //        var url = string.Format(Config.ApiMpHost + "/cgi-bin/user/info?access_token={0}&openid={1}",
+        //                                accessToken.AsUrlData(), openId.AsUrlData());
+        //        WeixinUserInfoResult result = CommonJsonSend.Send<WeixinUserInfoResult>(null, url, null, CommonJsonSendType.GET);
+        //        return result;
 
-            }, accessTokenOrAppId);
-        }
+        //    }, accessTokenOrAppId);
+        //}
 
 
         /// <summary>
@@ -132,12 +158,11 @@ namespace Senparc.Weixin.MP.CommonAPIs
                 var url = string.Format(Config.ApiMpHost + "/cgi-bin/ticket/getticket?access_token={0}&type={1}",
                                         accessToken.AsUrlData(), type.AsUrlData());
 
-                JsApiTicketResult result = Get.GetJson<JsApiTicketResult>(url);
+                JsApiTicketResult result = CommonJsonSend.Send<JsApiTicketResult>(null, url, null, CommonJsonSendType.GET);
                 return result;
 
             }, accessTokenOrAppId);
         }
-
 
         /// <summary>
         /// 获取微信服务器的ip段
@@ -150,14 +175,35 @@ namespace Senparc.Weixin.MP.CommonAPIs
             {
                 var url = string.Format(Config.ApiMpHost + "/cgi-bin/getcallbackip?access_token={0}", accessToken.AsUrlData());
 
-                return Get.GetJson<GetCallBackIpResult>(url);
+                return CommonJsonSend.Send<GetCallBackIpResult>(null, url, null, CommonJsonSendType.GET);
+
+            }, accessTokenOrAppId);
+        }
+
+        /// <summary>
+        /// 公众号调用或第三方平台帮公众号调用对公众号的所有api调用（包括第三方帮其调用）次数进行清零
+        /// </summary>
+        /// <param name="accessTokenOrAppId">AccessToken或AppId（推荐使用AppId，需要先注册）</param>
+        /// <param name="appId"></param>
+        /// <param name="timeOut"></param>
+        /// <returns></returns>
+        public static WxJsonResult ClearQuota(string accessTokenOrAppId, string appId, int timeOut = Config.TIME_OUT)
+        {
+            return ApiHandlerWapper.TryCommonApi(accessToken =>
+            {
+                var urlFormat = string.Format(Config.ApiMpHost + "/cgi-bin/clear_quota?access_token={0}", accessToken.AsUrlData());
+                var data = new
+                {
+                    appid = appId
+                };
+
+                return CommonJsonSend.Send<WxJsonResult>(null, urlFormat, data, timeOut: timeOut);
 
             }, accessTokenOrAppId);
         }
 
         #endregion
 
-#if !NET35 && !NET40
         #region 异步方法
 
         /// <summary>
@@ -167,33 +213,43 @@ namespace Senparc.Weixin.MP.CommonAPIs
         /// <param name="appid">第三方用户唯一凭证</param>
         /// <param name="secret">第三方用户唯一凭证密钥，既appsecret</param>
         /// <returns></returns>
+        [NcApiBind(NeuChar.PlatformType.WeChat_OfficialAccount, "CommonApi.GetTokenAsync", false, ApiRequestMethod = CO2NET.WebApi.ApiRequestMethod.Get)]
         public static async Task<AccessTokenResult> GetTokenAsync(string appid, string secret, string grant_type = "client_credential")
         {
             //注意：此方法不能再使用ApiHandlerWapper.TryCommonApi()，否则会循环
             var url = string.Format(Config.ApiMpHost + "/cgi-bin/token?grant_type={0}&appid={1}&secret={2}",
                                     grant_type.AsUrlData(), appid.AsUrlData(), secret.AsUrlData());
 
-            AccessTokenResult result = await Get.GetJsonAsync<AccessTokenResult>(url);
+            AccessTokenResult result = await Get.GetJsonAsync<AccessTokenResult>(CommonDI.CommonSP, url);//此处为最原始接口，不再使用重试获取的封装
+
+            if (Config.ThrownWhenJsonResultFaild && result.errcode != ReturnCode.请求成功)
+            {
+                throw new ErrorJsonResultException(
+                    string.Format("微信请求发生错误（CommonApi.GetToken）！错误代码：{0}，说明：{1}",
+                        (int)result.errcode, result.errmsg), null, result);
+            }
+
             return result;
         }
 
-        /// <summary>
-        /// 【异步方法】用户信息接口
-        /// </summary>
-        /// <param name="accessTokenOrAppId">AccessToken或AppId（推荐使用AppId，需要先注册）</param>
-        /// <param name="openId"></param>
-        /// <returns></returns>
-        public static async Task<WeixinUserInfoResult> GetUserInfoAsync(string accessTokenOrAppId, string openId)
-        {
-            return await ApiHandlerWapper.TryCommonApiAsync(async accessToken =>
-           {
-               var url = string.Format(Config.ApiMpHost + "/cgi-bin/user/info?access_token={0}&openid={1}",
-                                       accessToken.AsUrlData(), openId.AsUrlData());
-               var result = Get.GetJsonAsync<WeixinUserInfoResult>(url);
-               return await result;
+        //已经迁移到 UserApi 下
+        ///// <summary>
+        ///// 【异步方法】用户信息接口
+        ///// </summary>
+        ///// <param name="accessTokenOrAppId">AccessToken或AppId（推荐使用AppId，需要先注册）</param>
+        ///// <param name="openId"></param>
+        ///// <returns></returns>
+        //public static async Task<WeixinUserInfoResult> GetUserInfoAsync(string accessTokenOrAppId, string openId)
+        //{
+        //    return await ApiHandlerWapper.TryCommonApiAsync(async accessToken =>
+        //   {
+        //       var url = string.Format(Config.ApiMpHost + "/cgi-bin/user/info?access_token={0}&openid={1}",
+        //                               accessToken.AsUrlData(), openId.AsUrlData());
+        //       var result = CommonJsonSend.SendAsync<WeixinUserInfoResult>(null, url, null, CommonJsonSendType.GET);
+        //       return await result.ConfigureAwait(false);
 
-           }, accessTokenOrAppId);
-        }
+        //   }, accessTokenOrAppId).ConfigureAwait(false);
+        //}
 
 
         /// <summary>
@@ -205,7 +261,7 @@ namespace Senparc.Weixin.MP.CommonAPIs
         /// <returns></returns>
         public static async Task<JsApiTicketResult> GetTicketAsync(string appId, string secret, string type = "jsapi")
         {
-            var accessToken = await AccessTokenContainer.TryGetAccessTokenAsync(appId, secret);
+            var accessToken = await AccessTokenContainer.TryGetAccessTokenAsync(appId, secret).ConfigureAwait(false);
             return GetTicketByAccessToken(accessToken, type);
         }
 
@@ -222,10 +278,10 @@ namespace Senparc.Weixin.MP.CommonAPIs
                 var url = string.Format(Config.ApiMpHost + "/cgi-bin/ticket/getticket?access_token={0}&type={1}",
                                         accessToken.AsUrlData(), type.AsUrlData());
 
-                var result = Get.GetJsonAsync<JsApiTicketResult>(url);
-                return await result;
+                var result = CommonJsonSend.SendAsync<JsApiTicketResult>(null, url, null, CommonJsonSendType.GET);
+                return await result.ConfigureAwait(false);
 
-            }, accessTokenOrAppId);
+            }, accessTokenOrAppId).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -239,13 +295,34 @@ namespace Senparc.Weixin.MP.CommonAPIs
             {
                 var url = string.Format(Config.ApiMpHost + "/cgi-bin/getcallbackip?access_token={0}", accessToken.AsUrlData());
 
-                return await Get.GetJsonAsync<GetCallBackIpResult>(url);
+                return await CommonJsonSend.SendAsync<GetCallBackIpResult>(null, url, null, CommonJsonSendType.GET).ConfigureAwait(false);
 
-            }, accessTokenOrAppId);
+            }, accessTokenOrAppId).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// 【异步方法】公众号调用或第三方平台帮公众号调用对公众号的所有api调用（包括第三方帮其调用）次数进行清零
+        /// </summary>
+        /// <param name="accessTokenOrAppId">AccessToken或AppId（推荐使用AppId，需要先注册）</param>
+        /// <param name="appId"></param>
+        /// <param name="timeOut"></param>
+        /// <returns></returns>
+        public static async Task<WxJsonResult> ClearQuotaAsync(string accessTokenOrAppId, string appId, int timeOut = Config.TIME_OUT)
+        {
+            return await ApiHandlerWapper.TryCommonApiAsync(async accessToken =>
+            {
+                var urlFormat = string.Format(Config.ApiMpHost + "/cgi-bin/clear_quota?access_token={0}", accessToken.AsUrlData());
+                var data = new
+                {
+                    appid = appId
+                };
+
+                return await CommonJsonSend.SendAsync<WxJsonResult>(null, urlFormat, data, timeOut: timeOut).ConfigureAwait(false);
+
+            }, accessTokenOrAppId).ConfigureAwait(false);
         }
 
         #endregion
-#endif
 
     }
 }

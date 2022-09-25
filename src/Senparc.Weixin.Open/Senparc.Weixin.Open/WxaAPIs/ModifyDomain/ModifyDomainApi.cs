@@ -1,7 +1,7 @@
 ﻿#region Apache License Version 2.0
 /*----------------------------------------------------------------
 
-Copyright 2017 Jeffrey Su & Suzhou Senparc Network Technology Co.,Ltd.
+Copyright 2022 Jeffrey Su & Suzhou Senparc Network Technology Co.,Ltd.
 
 Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
 except in compliance with the License. You may obtain a copy of the License at
@@ -19,16 +19,21 @@ Detail: https://github.com/JeffreySu/WeiXinMPSDK/blob/master/license.md
 #endregion Apache License Version 2.0
 
 /*----------------------------------------------------------------
-    Copyright (C) 2017 Senparc
+    Copyright (C) 2022 Senparc
 
     文件名：ModifyDomainApi.cs
     文件功能描述：修改域名接口
 
 
     创建标识：Senparc - 20170601
-    
+
+    修改标识：Senparc - 20171201
+    修改描述：v1.7.3 修复ModifyDomainApi.ModifyDomain()方法判断问题
+        
 ----------------------------------------------------------------*/
 
+using Senparc.CO2NET.Extensions;
+using Senparc.NeuChar;
 using Senparc.Weixin.CommonAPIs;
 using Senparc.Weixin.HttpUtility;
 using Senparc.Weixin.Open.WxaAPIs.ModifyDomain;
@@ -40,6 +45,7 @@ using System.Threading.Tasks;
 
 namespace Senparc.Weixin.Open.WxaAPIs
 {
+    [NcApiBind(NeuChar.PlatformType.WeChat_Open,true)]
     public class ModifyDomainApi
     {
         #region 同步方法
@@ -55,6 +61,7 @@ namespace Senparc.Weixin.Open.WxaAPIs
         /// <param name="downloaddomain">downloadFile合法域名，当action参数是get时不需要此字段。</param>
         /// <param name="timeOut"></param>
         /// <returns></returns>
+        [Obsolete("请使用DomainApi.ModifyDomain")]
         public static ModifyDomainResultJson ModifyDomain(string accessToken, ModifyDomainAction action,
             List<string> requestdomain,
             List<string> wsrequestdomain,
@@ -66,7 +73,7 @@ namespace Senparc.Weixin.Open.WxaAPIs
 
             object data;
 
-            if (action == ModifyDomainAction.set)
+            if (action == ModifyDomainAction.get)
             {
                 data = new
                 {
@@ -91,11 +98,11 @@ namespace Senparc.Weixin.Open.WxaAPIs
         #endregion
 
 
-#if !NET35 && !NET40
+
         #region 异步方法
 
         /// <summary>
-        /// 【异步接口】修改服务器地址 接口
+        /// 【异步方法】修改服务器地址 接口
         /// </summary>
         /// <param name="accessToken"></param>
         /// <param name="action">操作类型</param>
@@ -105,6 +112,7 @@ namespace Senparc.Weixin.Open.WxaAPIs
         /// <param name="downloaddomain">downloadFile合法域名，当action参数是get时不需要此字段。</param>
         /// <param name="timeOut"></param>
         /// <returns></returns>
+        [Obsolete("请使用DomainApi.ModifyDomainAsync")]
         public static async Task<ModifyDomainResultJson> ModifyDomainAsync(string accessToken, ModifyDomainAction action,
             List<string> requestdomain,
             List<string> wsrequestdomain,
@@ -116,7 +124,7 @@ namespace Senparc.Weixin.Open.WxaAPIs
 
             object data;
 
-            if (action == ModifyDomainAction.set)
+            if (action == ModifyDomainAction.get)
             {
                 data = new
                 {
@@ -135,11 +143,10 @@ namespace Senparc.Weixin.Open.WxaAPIs
                 };
             }
 
-            return await CommonJsonSend.SendAsync<ModifyDomainResultJson>(null, url, data, CommonJsonSendType.POST, timeOut);
+            return await CommonJsonSend.SendAsync<ModifyDomainResultJson>(null, url, data, CommonJsonSendType.POST, timeOut).ConfigureAwait(false);
         }
 
 
         #endregion
-#endif
     }
 }

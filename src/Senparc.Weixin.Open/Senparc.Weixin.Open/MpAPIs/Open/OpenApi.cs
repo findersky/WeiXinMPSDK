@@ -1,5 +1,5 @@
 ﻿/*----------------------------------------------------------------
-    Copyright (C) 2017 Senparc
+    Copyright (C) 2022 Senparc
 
     文件名：OpenApi.cs
     文件功能描述：微信开放平台帐号管理接口
@@ -12,11 +12,13 @@
 ----------------------------------------------------------------*/
 
 using System.Threading.Tasks;
+using Senparc.NeuChar;
 using Senparc.Weixin.CommonAPIs;
 using Senparc.Weixin.Entities;
 
 namespace Senparc.Weixin.Open.MpAPIs.Open
 {
+    [NcApiBind(NeuChar.PlatformType.WeChat_Open,true)]
     public static class OpenApi
     {
         #region 同步方法
@@ -78,7 +80,7 @@ namespace Senparc.Weixin.Open.MpAPIs.Open
 
         #endregion
 
-#if !NET35 && !NET40
+
         #region 异步方法
 
         /// <summary>
@@ -92,7 +94,7 @@ namespace Senparc.Weixin.Open.MpAPIs.Open
         {
             var urlFormat = Config.ApiMpHost + "/cgi-bin/open/create?access_token={0}";
             var data = new { appid = appId };
-            return await CommonJsonSend.SendAsync<CreateJsonResult>(accessToken, urlFormat, data);
+            return await CommonJsonSend.SendAsync<CreateJsonResult>(accessToken, urlFormat, data).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -106,7 +108,7 @@ namespace Senparc.Weixin.Open.MpAPIs.Open
         {
             var urlFormat = Config.ApiMpHost + "/cgi-bin/open/bind?access_token={0}";
             var data = new { appid = appId, open_appid = openAppid };
-            return await CommonJsonSend.SendAsync<WxJsonResult>(accessToken, urlFormat, data);
+            return await CommonJsonSend.SendAsync<WxJsonResult>(accessToken, urlFormat, data).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -120,7 +122,7 @@ namespace Senparc.Weixin.Open.MpAPIs.Open
         {
             var urlFormat = Config.ApiMpHost + "/cgi-bin/open/unbind?access_token={0}";
             var data = new { appid = appId, open_appid = openAppid };
-            return await CommonJsonSend.SendAsync<WxJsonResult>(accessToken, urlFormat, data);
+            return await CommonJsonSend.SendAsync<WxJsonResult>(accessToken, urlFormat, data).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -133,10 +135,9 @@ namespace Senparc.Weixin.Open.MpAPIs.Open
         {
             var urlFormat = Config.ApiMpHost + "/cgi-bin/open/get?access_token={0}";
             var data = new { appid = appId };
-            return await CommonJsonSend.SendAsync<GetJsonResult>(accessToken, urlFormat, data);
+            return await CommonJsonSend.SendAsync<GetJsonResult>(accessToken, urlFormat, data).ConfigureAwait(false);
         }
 
         #endregion
-#endif
     }
 }

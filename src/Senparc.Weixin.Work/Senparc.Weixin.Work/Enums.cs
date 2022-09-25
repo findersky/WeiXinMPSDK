@@ -1,5 +1,5 @@
 ﻿/*----------------------------------------------------------------
-    Copyright (C) 2017 Senparc
+    Copyright (C) 2022 Senparc
 
     文件名：Enums.cs
     文件功能描述：枚举类型
@@ -17,28 +17,46 @@
     修改描述：v3.3.5 添加Login_User_Type枚举
 
     修改标识：Senparc - 20150507
-    修改描述：v4.2.1 ResponseMsgType添加SuccessResponse枚举
+    修改描述：v4.2.1 ResponseMsgType添加SuccessResponse枚举 
 
+    修改标识：pekrr1e  - 20180503
+    修改描述：v1.4.0 新增企业微信群聊会话功能支持
+              v1.4.1 增加“接收通讯录变更事件”
+
+    修改标识：Senparc - 20180909
+    修改描述：v3.1.2 枚举 ThirdPartyInfo.CONTACT_SYNC 改名为 ThirdPartyInfo.CHANGE_CONTACT；
+
+    修改标识：jiehanlin - 20200430
+    修改描述：v3.7.502 添加枚举“客户群变更事件”（CHANGE_EXTERNAL_CHAT）
+
+    修改标识：gokeiyou - 20201013
+    修改描述：v3.7.604 添加外部联系人管理 > 客户管理相关接口
+
+    修改标识：WangDrama - 20210630
+    修改描述：v3.9.600 添加 Event.CHANGE_EXTERNAL_CHAT 和 Event.LIVING_STATUS_CHANGE 枚举
+
+    修改标识：Senparc - 20210324
+    修改描述：v3.14.6 添加：审批申请状态变化回调通知：Event.SYS_APPROVAL_CHANGE
 ----------------------------------------------------------------*/
 
 namespace Senparc.Weixin.Work
 {
-    /// <summary>
-    /// 接收消息类型
-    /// </summary>
-    public enum RequestMsgType
-    {
-        DEFAULT,//默认
-        Text, //文本
-        Location, //地理位置
-        Image, //图片
-        Voice, //语音
-        Video, //视频
-        Link, //连接信息
-        Event, //事件推送
-        ShortVideo, //小视频
-        File,//文件
-    }
+    ///// <summary>
+    ///// 接收消息类型
+    ///// </summary>
+    //public enum RequestMsgType
+    //{
+    //    DEFAULT,//默认
+    //    Text, //文本
+    //    Location, //地理位置
+    //    Image, //图片
+    //    Voice, //语音
+    //    Video, //视频
+    //    Link, //连接信息
+    //    Event, //事件推送
+    //    ShortVideo, //小视频
+    //    File,//文件
+    //}
 
     /// <summary>
     /// 当RequestMsgType类型为Event时，Event属性的类型
@@ -129,6 +147,33 @@ namespace Senparc.Weixin.Work
         /// 异步任务完成事件推送
         /// </summary>
         BATCH_JOB_RESULT,
+        /// <summary>
+        /// 通讯录变更事件
+        /// </summary>
+        change_contact,
+        /// <summary>
+        /// 外部联系人变更事件
+        /// </summary>
+        CHANGE_EXTERNAL_CONTACT,
+        /// <summary>
+        /// 客户群变更事件
+        /// </summary>
+        CHANGE_EXTERNAL_CHAT,
+        /// <summary>
+        /// 直播回调事件
+        /// </summary>
+        LIVING_STATUS_CHANGE,
+
+        #region 审批事件
+        /// <summary>
+        /// （系统应用）审批申请状态变化回调通知
+        /// </summary>
+        SYS_APPROVAL_CHANGE,
+        /// <summary>
+        /// 自建应用审批状态变化通知回调
+        /// </summary>
+        OPEN_APPROVAL_CHANGE
+        #endregion
     }
 
     public enum ThirdPartyInfo
@@ -161,66 +206,39 @@ namespace Senparc.Weixin.Work
         /// <summary>
         /// 通讯录变更通知
         /// </summary>
-        CONTACT_SYNC
+        CHANGE_CONTACT,//更新前字符串：CONTACT_SYNC
+
+        /// <summary>
+        /// 外部联系人变更通知
+        /// </summary>
+        CHANGE_EXTERNAL_CONTACT,
+
+        /// <summary>
+        /// 推广码注册完成通知
+        /// </summary>
+        REGISTER_CORP
     }
 
 
-    /// <summary>
-    /// 发送消息类型
-    /// </summary>
-    public enum ResponseMsgType
-    {
-        Text,
-        News,
-        Music,
-        Image,
-        Voice,
-        Video,
-        MpNews,
+    ///// <summary>
+    ///// 发送消息类型
+    ///// </summary>
+    //public enum ResponseMsgType
+    //{
+    //    Text,
+    //    News,
+    //    Music,
+    //    Image,
+    //    Voice,
+    //    Video,
+    //    MpNews,
 
-        //以下类型为Senparc.Weixin自用类型
-        NoResponse,
-        SuccessResponse
-    }
+    //    //以下类型为Senparc.Weixin自用类型
+    //    NoResponse,
+    //    SuccessResponse
+    //}
 
-    /// <summary>
-    /// 菜单按钮类型
-    /// </summary>
-    public enum ButtonType
-    {
-        /// <summary>
-        /// 点击
-        /// </summary>
-        click,
-        /// <summary>
-        /// Url
-        /// </summary>
-        view,
-        /// <summary>
-        /// 扫码推事件
-        /// </summary>
-        scancode_push,
-        /// <summary>
-        /// 扫码推事件且弹出“消息接收中”提示框
-        /// </summary>
-        scancode_waitmsg,
-        /// <summary>
-        /// 弹出系统拍照发图
-        /// </summary>
-        pic_sysphoto,
-        /// <summary>
-        /// 弹出拍照或者相册发图
-        /// </summary>
-        pic_photo_or_album,
-        /// <summary>
-        /// 弹出微信相册发图器
-        /// </summary>
-        pic_weixin,
-        /// <summary>
-        /// 弹出地理位置选择器
-        /// </summary>
-        location_select
-    }
+
 
     /// <summary>
     /// 上传媒体文件类型（所有文件size必须大于5个字节）【QY移植修改】
@@ -405,7 +423,12 @@ namespace Senparc.Weixin.Work
     {
         text = 0,
         image = 1,
-        file = 2
+        voice = 2,
+        video = 3,
+        file = 4,
+        textcard = 5,
+        news = 6,
+        mpnews = 7
     }
 
     /// <summary>
@@ -463,5 +486,39 @@ namespace Senparc.Weixin.Work
         /// <summary>成员或管理员皆可登录
         /// </summary>
         all
+    }
+
+    /// <summary>
+    /// 开票来源
+    /// </summary>
+    public enum SourceType
+    {
+        /// <summary>
+        /// app：app开票，web：微信h5开票，wxa：小程序开发票，wap：普通网页开票
+        /// </summary>
+        app,
+        web,
+        wxa,
+        wap
+    }
+
+    /// <summary>
+    /// 授权类型
+    /// </summary>
+    public enum AuthType
+    {
+        开票授权,
+        填写字段开票授权,
+        领票授权
+    }
+
+    /// <summary>
+    /// 发票行性质
+    /// </summary>
+    public enum Fphxz
+    {
+        正常,
+        折扣,
+        被折扣
     }
 }

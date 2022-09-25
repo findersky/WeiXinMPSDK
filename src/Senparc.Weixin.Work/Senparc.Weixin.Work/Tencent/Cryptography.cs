@@ -7,6 +7,10 @@
     
     修改标识：Senparc - 20150313
     修改描述：整理接口
+    
+    修改标识：Senparc - 20181226
+    修改描述：v3.3.2 修改 DateTime 为 DateTimeOffset
+
 ----------------------------------------------------------------*/
 
 using System;
@@ -95,7 +99,7 @@ namespace Senparc.Weixin.Work.Tencent
             string[] arr = codeSerial.Split(',');
             string code = "";
             int randValue = -1;
-            Random rand = new Random(unchecked((int)DateTime.Now.Ticks));
+            Random rand = new Random(unchecked((int)SystemTime.Now.Ticks));
             for (int i = 0; i < codeLen; i++)
             {
                 randValue = rand.Next(0, arr.Length - 1);
@@ -106,7 +110,7 @@ namespace Senparc.Weixin.Work.Tencent
 
         private static String AES_encrypt(String Input, byte[] Iv, byte[] Key)
         {
-#if NET45
+#if NET462
             var aes = new RijndaelManaged();
 #else
             var aes = Aes.Create();
@@ -138,7 +142,7 @@ namespace Senparc.Weixin.Work.Tencent
 
         private static String AES_encrypt(byte[] Input, byte[] Iv, byte[] Key)
         {
-#if NET45
+#if NET462
             var aes = new RijndaelManaged();
 #else
             var aes = Aes.Create();
@@ -213,7 +217,7 @@ namespace Senparc.Weixin.Work.Tencent
         }
         private static byte[] AES_decrypt(String Input, byte[] Iv, byte[] Key)
         {
-#if NET45
+#if NET462
             var aes = new RijndaelManaged();
 #else
             var aes = Aes.Create();
