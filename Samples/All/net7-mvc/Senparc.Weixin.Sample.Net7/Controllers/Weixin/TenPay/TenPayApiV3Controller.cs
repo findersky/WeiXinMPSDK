@@ -466,7 +466,7 @@ namespace Senparc.Weixin.Sample.Net6.Controllers
 
                 WeixinTrace.SendCustomLog("H5Pay接口返回", result.ToJson());
 
-                if (!result.VerifySignSuccess == true)
+                if (result.VerifySignSuccess != true)
                 {
                     return Content("未通过验证，请检查数据有效性！");
                 }
@@ -546,7 +546,7 @@ namespace Senparc.Weixin.Sample.Net6.Controllers
                 //var dataInfo = new TenPayV3RefundRequestData(TenPayV3Info.AppId, TenPayV3Info.MchId, TenPayV3Info.Key,
                 //    null, nonceStr, null, outTradeNo, outRefundNo, totalFee, refundFee, opUserId, null, notifyUrl: notifyUrl);
                 //TODO:该接口参数二选一传入
-                var dataInfo = new RefundRequsetData(transactionId, null, outRefundNo, "Senparc TenPayV3 demo退款测试", notifyUrl, null, new RefundRequsetData.Amount(refundFee, null, refundFee, "CNY"), null);
+                var dataInfo = new RefundRequestData(transactionId, null, outRefundNo, "Senparc TenPayV3 demo退款测试", notifyUrl, null, new RefundRequestData.Amount(refundFee, null, refundFee, "CNY"), null);
 
 
                 //#region 新方法（Senparc.Weixin v6.4.4+）

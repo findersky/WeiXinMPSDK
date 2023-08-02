@@ -48,6 +48,12 @@
     修改标识：IcedMango - 20221106
     修改描述：v3.15.10 增加企业微信获取成员ID列表的接口
 
+    修改标识：IcedMango - 20221106
+    修改描述：v3.15.17 添加“邮箱获取 userid”接口
+
+    修改标识：Senparc - 20230613
+    修改描述：v3.15.21 添加获取子部门ID列表方法,包含同步及异步（PR #2858）
+
 ----------------------------------------------------------------*/
 
 /*
@@ -59,6 +65,7 @@
     获取部门成员：http://work.weixin.qq.com/api/doc#10061
     获取部门成员详情：http://work.weixin.qq.com/api/doc#10063
     手机号获取userid：https://work.weixin.qq.com/api/doc#90001/90143/91693
+    邮箱获取userid：https://work.weixin.qq.com/api/doc#90001/90143/95892
  */
 
 using System;
@@ -217,6 +224,30 @@ namespace Senparc.Weixin.Work.AdvancedAPIs
                 var data = new
                 {
                     mobile
+                };
+
+                return CommonJsonSend.Send<GetUseridResult>(null, url, data, CommonJsonSendType.POST, timeOut);
+            }, accessTokenOrAppKey);
+        }
+
+        /// <summary>
+        /// 邮箱获取 userid
+        /// </summary>
+        /// <param name="accessTokenOrAppKey">调用接口凭证（AccessToken）或AppKey（根据AccessTokenContainer.BuildingKey(corpId, corpSecret)方法获得）</param>
+        /// <param name="email">邮箱</param>
+        /// <param name="emailType">邮箱类型：1-企业邮箱（默认）；2-个人邮箱</param>
+        /// <param name="timeOut">代理请求超时时间（毫秒）</param>
+        /// <returns></returns>
+        public static GetUseridResult GetUseridByEmail(string accessTokenOrAppKey, string email, Email_Type emailType = Email_Type.企业邮箱, int timeOut = Config.TIME_OUT)
+        {
+            return ApiHandlerWapper.TryCommonApi(accessToken =>
+            {
+                var url = string.Format(Config.ApiWorkHost + "/cgi-bin/user/get_userid_by_email?access_token={0}", accessToken.AsUrlData());
+
+                var data = new
+                {
+                    email = email,
+                    email_type = (int)emailType
                 };
 
                 return CommonJsonSend.Send<GetUseridResult>(null, url, data, CommonJsonSendType.POST, timeOut);
@@ -408,6 +439,27 @@ namespace Senparc.Weixin.Work.AdvancedAPIs
                 return CommonJsonSend.Send<GetDepartmentListResult>(null, url, null, CommonJsonSendType.GET);
             }, accessTokenOrAppKey);
 
+
+        }
+
+
+        /// <summary>
+        /// 获取子部门ID列表
+        /// </summary>
+        /// <param name="accessTokenOrAppKey">调用接口凭证（AccessToken）或AppKey（根据AccessTokenContainer.BuildingKey(corpId, corpSecret)方法获得）</param>
+        /// <param name="id">部门id。获取指定部门及其下的子部门。 如果不填，默认获取全量组织架构</param>
+        /// <returns></returns>
+        public static  GetDepartmentIdListResult GetDepartmentIdList(string accessTokenOrAppKey, long? id = null)
+        {
+            return  ApiHandlerWapper.TryCommonApi(accessToken =>
+            {
+                var url = string.Format(Config.ApiWorkHost + "/cgi-bin/department/simplelist?access_token={0}", accessToken.AsUrlData());
+                if (id.HasValue)
+                {
+                    url += string.Format("&id={0}", id.Value);
+                }
+                return  CommonJsonSend.Send<GetDepartmentIdListResult>(null, url, null, CommonJsonSendType.GET);
+            }, accessTokenOrAppKey);
 
         }
 
@@ -640,7 +692,6 @@ namespace Senparc.Weixin.Work.AdvancedAPIs
         /// <param name="accessTokenOrAppKey"></param>
         /// <param name="userId"></param>
         /// <returns></returns>
-        [IgnoreApiBind]
         public static WorkJsonResult AuthSucc(string accessTokenOrAppKey, string userId)
         {
             return ApiHandlerWapper.TryCommonApi(accessToken =>
@@ -792,6 +843,30 @@ namespace Senparc.Weixin.Work.AdvancedAPIs
                 var data = new
                 {
                     mobile
+                };
+
+                return await CommonJsonSend.SendAsync<GetUseridResult>(null, url, data, CommonJsonSendType.POST, timeOut).ConfigureAwait(false);
+            }, accessTokenOrAppKey).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// 【异步方法】邮箱获取 userid
+        /// </summary>
+        /// <param name="accessTokenOrAppKey">调用接口凭证（AccessToken）或AppKey（根据AccessTokenContainer.BuildingKey(corpId, corpSecret)方法获得）</param>
+        /// <param name="email">邮箱</param>
+        /// <param name="emailType">邮箱类型：1-企业邮箱（默认）；2-个人邮箱</param>
+        /// <param name="timeOut">代理请求超时时间（毫秒）</param>
+        /// <returns></returns>
+        public static async Task<GetUseridResult> GetUseridByEmailAsync(string accessTokenOrAppKey, string email, Email_Type emailType = Email_Type.企业邮箱, int timeOut = Config.TIME_OUT)
+        {
+            return await ApiHandlerWapper.TryCommonApiAsync(async accessToken =>
+            {
+                var url = string.Format(Config.ApiWorkHost + "/cgi-bin/user/get_userid_by_email?access_token={0}", accessToken.AsUrlData());
+
+                var data = new
+                {
+                    email = email,
+                    email_type = (int)emailType
                 };
 
                 return await CommonJsonSend.SendAsync<GetUseridResult>(null, url, data, CommonJsonSendType.POST, timeOut).ConfigureAwait(false);
@@ -985,6 +1060,26 @@ namespace Senparc.Weixin.Work.AdvancedAPIs
                 return await CommonJsonSend.SendAsync<GetDepartmentListResult>(null, url, null, CommonJsonSendType.GET);
             }, accessTokenOrAppKey);
 
+
+        }
+        
+        /// <summary>
+        /// 获取子部门ID列表
+        /// </summary>
+        /// <param name="accessTokenOrAppKey">调用接口凭证（AccessToken）或AppKey（根据AccessTokenContainer.BuildingKey(corpId, corpSecret)方法获得）</param>
+        /// <param name="id">部门id。获取指定部门及其下的子部门。 如果不填，默认获取全量组织架构</param>
+        /// <returns></returns>
+        public static async Task<GetDepartmentIdListResult> GetDepartmentIdListAsync(string accessTokenOrAppKey, long? id = null)
+        {
+            return await ApiHandlerWapper.TryCommonApiAsync(async accessToken =>
+            {
+                var url = string.Format(Config.ApiWorkHost + "/cgi-bin/department/simplelist?access_token={0}", accessToken.AsUrlData());
+                if (id.HasValue)
+                {
+                    url += string.Format("&id={0}", id.Value);
+                }
+                return await CommonJsonSend.SendAsync<GetDepartmentIdListResult>(null, url, null, CommonJsonSendType.GET).ConfigureAwait(false);
+            }, accessTokenOrAppKey).ConfigureAwait(false);
 
         }
 
@@ -1219,7 +1314,6 @@ namespace Senparc.Weixin.Work.AdvancedAPIs
         /// <param name="accessTokenOrAppKey"></param>
         /// <param name="userId"></param>
         /// <returns></returns>
-        [IgnoreApiBind]
         public static async Task<WorkJsonResult> AuthSuccAsync(string accessTokenOrAppKey, string userId)
         {
             return await ApiHandlerWapper.TryCommonApiAsync(async accessToken =>

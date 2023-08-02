@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFrameworks>net462;netstandard2.0;netstandard2.1</TargetFrameworks>
-    <Version>3.15.13</Version>
+    <Version>3.16.2.2</Version>
     <LangVersion>9.0</LangVersion>
     <AssemblyName>Senparc.Weixin.WxOpen</AssemblyName>
     <RootNamespace>Senparc.Weixin.WxOpen</RootNamespace>
@@ -50,7 +50,6 @@
 			1、增加GetWxaCodeUnlimit接口
 			2、为Tencent命名空间添加Senparc.Weixin.WxOpen前缀
 			3、添加JsCode2JsonResult.unionid
-
 
 			v1.5.0
 			1、支持.NET Core 2.0
@@ -172,7 +171,10 @@
 		v3.15.10 EncryptHelper.DecodeEncryptedData() 方法添加 keySize 参数
 		v3.15.12 添加小程序类目审核结果事件推送
 		v3.15.13 添加“文本内容安全识别”接口 PR #2786
-	</PackageReleaseNotes>
+		v3.15.15 添加物流服务相关接口和事件推送 PR #2834
+		v3.15.15.1 获取小程序服务GenerateScheme模型增加env_version字段 PR #2861
+		v3.16.0 客服接口支持长文本自动切割后连续发送
+</PackageReleaseNotes>
     <RepositoryUrl>https://github.com/JeffreySu/WeiXinMPSDK</RepositoryUrl>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
@@ -215,7 +217,7 @@
     <PackageReference Include="System.Xml.XPath.XmlDocument" Version="4.3.0" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Senparc.NeuChar" Version="2.1.3.5" />
+    <PackageReference Include="Senparc.NeuChar" Version="2.3.1.1" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\Senparc.Weixin.MP\Senparc.Weixin.MP\Senparc.Weixin.MP.net7.csproj" />
