@@ -2,7 +2,7 @@
 
 /*----------------------------------------------------------------
 
-Copyright 2023 Jeffrey Su & Suzhou Senparc Network Technology Co.,Ltd.
+Copyright 2024 Jeffrey Su & Suzhou Senparc Network Technology Co.,Ltd.
 
 Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
 except in compliance with the License. You may obtain a copy of the License at
@@ -21,13 +21,16 @@ Detail: https://github.com/JeffreySu/WeiXinMPSDK/blob/master/license.md
 #endregion Apache License Version 2.0
 
 /*----------------------------------------------------------------
-    Copyright (C) 2023 Senparc
+    Copyright (C) 2024 Senparc
   
     文件名：GroupChatGetResult.cs
     文件功能描述：获取客户群详情 返回结果
     
     
     创建标识：lishewen - 20200318
+
+    修改标识：XiaoPoTian - 20231122
+    修改描述：v3.18.1 添加“当前群成员版本号。可以配合客户群变更事件减少主动调用本接口的次数”（member_version）
 
 
 ----------------------------------------------------------------*/
@@ -77,6 +80,11 @@ namespace Senparc.Weixin.Work.AdvancedAPIs.External
         ///     群公告
         /// </summary>
         public string notice { get; set; }
+
+        /// <summary>
+        /// 当前群成员版本号。可以配合客户群变更事件减少主动调用本接口的次数
+        /// </summary>
+        public string member_version {  get; set; }
 
         /// <summary>
         ///     群成员列表

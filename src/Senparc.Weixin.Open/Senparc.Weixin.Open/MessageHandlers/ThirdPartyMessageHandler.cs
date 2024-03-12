@@ -1,5 +1,5 @@
 ﻿/*----------------------------------------------------------------
-    Copyright (C) 2023 Senparc
+    Copyright (C) 2024 Senparc
   
     文件名：ThirdPartyMessageHandler.cs
     文件功能描述：开放平台消息处理器
@@ -15,6 +15,9 @@
 
     修改标识：mc7246 - 20220402
     修改描述：v4.13.9 添加试用小程序接口及事件
+
+    修改标识：mc7246 - 20231211
+    修改描述：添加小程序微信认证事件第三方通知推送
 
 ----------------------------------------------------------------*/
 
@@ -174,6 +177,18 @@ namespace Senparc.Weixin.Open.MessageHandlers
                             ResponseMessageText = OnIcpFilingApplyRequest(requestMessage);
                         }
                         break;
+                    case RequestInfoType.notify_3rd_wxa_auth:
+                        {
+                            var requestMessage = RequestMessage as RequestMessage3rdWxaAuth;
+                            ResponseMessageText = On3rdWxaAuthRequest(requestMessage);
+                        }
+                        break;
+                    case RequestInfoType.notify_3rd_wxa_wxverify:
+                        {
+                            var requestMessage = RequestMessage as RequestMessage3rdWxaWxVerify;
+                            ResponseMessageText = On3rdWxaWxVerifyRequest(requestMessage);
+                        }
+                        break;
                     default:
                         throw new UnknownRequestMsgTypeException("未知的InfoType请求类型", null);
                 }
@@ -195,6 +210,17 @@ namespace Senparc.Weixin.Open.MessageHandlers
 
         public virtual void OnExecuted()
         {
+        }
+
+        public virtual string On3rdWxaWxVerifyRequest(RequestMessage3rdWxaWxVerify requestMessage)
+        {
+            return "success";
+        }
+
+
+        public virtual string On3rdWxaAuthRequest(RequestMessage3rdWxaAuth requestMessage)
+        {
+            return "success";
         }
 
         public virtual string OnIcpFilingApplyRequest(RequestMessageIcpFilingApply requestMessage) 
@@ -255,6 +281,8 @@ namespace Senparc.Weixin.Open.MessageHandlers
             return "success";
         }
 
+
+        [Obsolete("此事件请在小程序SDK处理")]
         public virtual string OnNicknameAuditRequest(RequestMessageNicknameAudit requestMessage)
         {
             return "success";

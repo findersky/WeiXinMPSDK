@@ -1,7 +1,7 @@
 ﻿#region Apache License Version 2.0
 /*----------------------------------------------------------------
 
-Copyright 2023 Jeffrey Su & Suzhou Senparc Network Technology Co.,Ltd.
+Copyright 2024 Jeffrey Su & Suzhou Senparc Network Technology Co.,Ltd.
 
 Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
 except in compliance with the License. You may obtain a copy of the License at
@@ -19,7 +19,7 @@ Detail: https://github.com/JeffreySu/WeiXinMPSDK/blob/master/license.md
 #endregion Apache License Version 2.0
 
 /*----------------------------------------------------------------
-    Copyright (C) 2023 Senparc
+    Copyright (C) 2024 Senparc
   
     文件名：QueryRequestData.cs
     文件功能描述：查询退款订单请求数据
@@ -73,7 +73,6 @@ namespace Senparc.Weixin.TenPayV3.Apis.BasePay
         /// 子商户的商户号，由微信支付生成并下发。
         /// 示例值：1900000109
         /// </summary>
-        [JsonIgnore]
         public string sub_mchid { get; set; }
         #endregion
 

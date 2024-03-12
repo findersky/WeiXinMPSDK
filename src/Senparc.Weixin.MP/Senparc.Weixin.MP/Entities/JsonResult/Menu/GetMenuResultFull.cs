@@ -1,7 +1,7 @@
 ﻿#region Apache License Version 2.0
 /*----------------------------------------------------------------
 
-Copyright 2023 Jeffrey Su & Suzhou Senparc Network Technology Co.,Ltd.
+Copyright 2024 Jeffrey Su & Suzhou Senparc Network Technology Co.,Ltd.
 
 Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
 except in compliance with the License. You may obtain a copy of the License at
@@ -19,7 +19,7 @@ Detail: https://github.com/JeffreySu/WeiXinMPSDK/blob/master/license.md
 #endregion Apache License Version 2.0
 
 /*----------------------------------------------------------------
-    Copyright (C) 2023 Senparc
+    Copyright (C) 2024 Senparc
     
     文件名：GetMenuResultFull.cs
     文件功能描述：获取菜单时候的完整结构，用于接收微信服务器返回的Json信息
@@ -32,6 +32,9 @@ Detail: https://github.com/JeffreySu/WeiXinMPSDK/blob/master/license.md
     
     修改标识：JaneConan - 20230417
     修改描述：v16.18.10.7 修复自定义菜单实体问题
+
+    修改标识：Senparc - 20231202
+    修改描述：v16.20.2 fix bug: self menu onfig result. PR #2963 / Issue #2804
 
 ----------------------------------------------------------------*/
 
@@ -84,7 +87,9 @@ namespace Senparc.Weixin.MP
         
 
         public List<MenuFull_RootButton> sub_button { get; set; }
+
     }
+
     #endregion
 
     #region Conditional（个性化菜单）相关
@@ -93,6 +98,38 @@ namespace Senparc.Weixin.MP
         public List<MenuFull_RootButton> button { get; set; }
     }
 
+    public class SelfMenuFull_ButtonGroup
+    {
+        public List<SelfMenuFull_RootButton> button { get; set; }
+    }
+    public class SelfMenuFull_RootButton
+    {
+        public string type { get; set; }
+        public string key { get; set; }
+        public string name { get; set; }
+        public string url { get; set; }
+
+        public NewsInfo news_info { get; set; }
+
+        #region 小程序
+
+        public string appid { get; set; }
+        public string pagepath { get; set; }
+
+        #endregion
+
+        public string media_id { get; set; }
+
+        public string article_id { get; set; }
+
+
+        public Sub_Button sub_button { get; set; }
+
+    }
+    public class Sub_Button
+    {
+        public List<MenuFull_RootButton> list { get; set; }
+    }
     /// <summary>
     /// 自定义菜单配置
     /// </summary>
@@ -106,7 +143,7 @@ namespace Senparc.Weixin.MP
         /// <summary>
         /// 菜单信息
         /// </summary>
-        public MenuFull_ButtonGroup selfmenu_info { get; set; }
+        public SelfMenuFull_ButtonGroup selfmenu_info { get; set; }
 
     }
 

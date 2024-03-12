@@ -1,7 +1,7 @@
 ﻿#region Apache License Version 2.0
 /*----------------------------------------------------------------
 
-Copyright 2023 Jeffrey Su & Suzhou Senparc Network Technology Co.,Ltd.
+Copyright 2024 Jeffrey Su & Suzhou Senparc Network Technology Co.,Ltd.
 
 Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
 except in compliance with the License. You may obtain a copy of the License at
@@ -19,7 +19,7 @@ Detail: https://github.com/JeffreySu/WeiXinMPSDK/blob/master/license.md
 #endregion Apache License Version 2.0
 
 /*----------------------------------------------------------------
-    Copyright (C) 2023 Senparc
+    Copyright (C) 2024 Senparc
   
     文件名：Enums.cs
     文件功能描述：枚举类型
@@ -35,6 +35,9 @@ Detail: https://github.com/JeffreySu/WeiXinMPSDK/blob/master/license.md
     
     修改标识：chinanhb - 20230529
     修改描述：运单轨迹更新事件推送，增加 Event.add_express_path 枚举值
+
+    修改标识：Senparc - 20231202
+    修改描述：v3.17.2 Event 添加“小程序虚拟支付”相关枚举
 
 ----------------------------------------------------------------*/
 
@@ -94,7 +97,32 @@ namespace Senparc.Weixin.WxOpen
         /// <summary>
         /// 订单将要结算或已经结算事件
         /// </summary>
-        trade_manage_order_settlement
+        trade_manage_order_settlement,
+        /// <summary>
+        /// 小程序微信认证支付成功事件
+        /// </summary>
+        wx_verify_pay_succ,
+        /// <summary>
+        /// 小程序微信认证派单事件
+        /// </summary>
+        wx_verify_dispatch,
+
+        #region 小程序虚拟支付
+        /// <summary>
+        /// 道具发货推送
+        /// </summary>
+        xpay_goods_deliver_notify,
+
+        /// <summary>
+        /// 代币支付推送
+        /// </summary>
+        xpay_coin_pay_notify,
+
+        /// <summary>
+        /// 退款推送
+        /// </summary>
+        xpay_refund_notify,
+        #endregion
     }
 
     ///// <summary>

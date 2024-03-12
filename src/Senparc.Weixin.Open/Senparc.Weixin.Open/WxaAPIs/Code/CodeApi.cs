@@ -1,7 +1,7 @@
 ﻿#region Apache License Version 2.0
 /*----------------------------------------------------------------
 
-Copyright 2023 Jeffrey Su & Suzhou Senparc Network Technology Co.,Ltd.
+Copyright 2024 Jeffrey Su & Suzhou Senparc Network Technology Co.,Ltd.
 
 Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
 except in compliance with the License. You may obtain a copy of the License at
@@ -19,7 +19,7 @@ Detail: https://github.com/JeffreySu/WeiXinMPSDK/blob/master/license.md
 #endregion Apache License Version 2.0
 
 /*----------------------------------------------------------------
-    Copyright (C) 2023 Senparc
+    Copyright (C) 2024 Senparc
     
     文件名：CodeApi.cs
     文件功能描述：代码管理
@@ -59,6 +59,7 @@ using System.IO;
 using Senparc.CO2NET.Extensions;
 using Senparc.NeuChar;
 using Senparc.Weixin.Entities;
+using Senparc.Weixin.Open.WxaAPIs.Code;
 
 namespace Senparc.Weixin.Open.WxaAPIs
 {
@@ -265,11 +266,12 @@ namespace Senparc.Weixin.Open.WxaAPIs
         /// <para>文档：https://developers.weixin.qq.com/doc/oplatform/Third-party_Platforms/2.0/api/code/get_history_version.html</para>
         /// </summary>
         /// <param name="accessToken">从第三方平台获取到的该小程序授权</param>
+        /// <param name="appVersion"></param>
         /// <param name="timeOut"></param>
         /// <returns></returns>
-        public static CodeResultJson RevertCodeRelease(string accessToken, int timeOut = Config.TIME_OUT)
+        public static CodeResultJson RevertCodeRelease(string accessToken, string appVersion, int timeOut = Config.TIME_OUT)
         {
-            var url = string.Format(Config.ApiMpHost + "/wxa/revertcoderelease?access_token={0}", accessToken.AsUrlData());
+            var url = string.Format(Config.ApiMpHost + "/wxa/revertcoderelease?access_token={0}&app_version={1}", accessToken.AsUrlData(),appVersion.AsUrlData());
 
             return CommonJsonSend.Send<CodeResultJson>(null, url, null, CommonJsonSendType.GET, timeOut);
         }
@@ -617,9 +619,9 @@ namespace Senparc.Weixin.Open.WxaAPIs
         /// <param name="accessToken">从第三方平台获取到的该小程序授权</param>
         /// <param name="timeOut"></param>
         /// <returns></returns>
-        public static async Task<CodeResultJson> RevertCodeReleaseAsync(string accessToken, int timeOut = Config.TIME_OUT)
+        public static async Task<CodeResultJson> RevertCodeReleaseAsync(string accessToken, string appVersion, int timeOut = Config.TIME_OUT)
         {
-            var url = string.Format(Config.ApiMpHost + "/wxa/revertcoderelease?access_token={0}", accessToken.AsUrlData());
+            var url = string.Format(Config.ApiMpHost + "/wxa/revertcoderelease?access_token={0}&app_version={1}", accessToken.AsUrlData(), appVersion.AsUrlData());
 
             return await CommonJsonSend.SendAsync<CodeResultJson>(null, url, null, CommonJsonSendType.GET, timeOut).ConfigureAwait(false);
         }

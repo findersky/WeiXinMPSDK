@@ -1,7 +1,7 @@
 ﻿#region Apache License Version 2.0
 /*----------------------------------------------------------------
 
-Copyright 2023 Jeffrey Su & Suzhou Senparc Network Technology Co.,Ltd.
+Copyright 2024 Jeffrey Su & Suzhou Senparc Network Technology Co.,Ltd.
 
 Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
 except in compliance with the License. You may obtain a copy of the License at
@@ -19,7 +19,7 @@ Detail: https://github.com/JeffreySu/WeiXinMPSDK/blob/master/license.md
 #endregion Apache License Version 2.0
 
 /*----------------------------------------------------------------
-    Copyright (C) 2023 Senparc
+    Copyright (C) 2024 Senparc
 
     文件名：WeixinRegister.cs
     文件功能描述：Senparc.Weixin 快捷注册流程（包括Thread、TraceLog等）
@@ -69,12 +69,15 @@ Detail: https://github.com/JeffreySu/WeiXinMPSDK/blob/master/license.md
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 #endif
+using Microsoft.Extensions.Configuration;
 using Senparc.CO2NET;
+using Senparc.CO2NET.Cache;
 using Senparc.CO2NET.Helpers;
 using Senparc.CO2NET.RegisterServices;
 using Senparc.Weixin.Cache;
 using Senparc.Weixin.Entities;
 using System;
+using System.Collections.Generic;
 
 namespace Senparc.Weixin
 {
@@ -176,6 +179,37 @@ namespace Senparc.Weixin
             return registerService;
         }
 
+#if !NET462
+
+        /// <summary>
+        /// 开始 Senparc.Weixin SDK 初始化参数流程
+        /// </summary>
+        /// <param name="app">configuration source</param>
+        /// <param name="senparcSetting">SenparcSetting 对象</param>
+        /// <param name="senparcWeixinSetting">SenparcWeixinSetting 对象</param>
+        /// <param name="globalRegisterConfigure">RegisterService 设置</param>
+        /// <param name="weixinRegisterConfigure">SenparcWeixinSetting RegisterService 设置</param>
+        /// <param name="autoScanExtensionCacheStrategies">是否自动扫描全局的扩展缓存（会增加系统启动时间）</param>
+        /// <param name="extensionCacheStrategiesFunc"><para>需要手动注册的扩展缓存策略</para>
+        /// <para>（LocalContainerCacheStrategy、RedisContainerCacheStrategy、MemcacheContainerCacheStrategy已经自动注册），</para>
+        /// <para>如果设置为 null（注意：不适委托返回 null，是整个委托参数为 null），则自动使用反射扫描所有可能存在的扩展缓存策略</para></param>
+        /// <returns></returns>
+        /// <returns></returns>
+        public static IRegisterService UseSenparcWeixin(this IConfigurationRoot app,
+            SenparcSetting senparcSetting, SenparcWeixinSetting senparcWeixinSetting,
+            Action<IRegisterService/*, SenparcSetting*/> globalRegisterConfigure,
+            Action<IRegisterService, SenparcWeixinSetting> weixinRegisterConfigure,
+             //CO2NET 全局设置
+             bool autoScanExtensionCacheStrategies = false,
+             Func<List<IDomainExtensionCacheStrategy>> extensionCacheStrategiesFunc = null
+            )
+        {
+            //注册 CO2NET 全局
+            var register = app.UseSenparcGlobal(senparcSetting, globalRegisterConfigure, autoScanExtensionCacheStrategies, extensionCacheStrategiesFunc);
+
+            return WeixinRegister.UseSenparcWeixin(register.registerService, senparcWeixinSetting, senparcSetting);
+        }
+#endif
 
         #region v6.6.102+ 新方法
 

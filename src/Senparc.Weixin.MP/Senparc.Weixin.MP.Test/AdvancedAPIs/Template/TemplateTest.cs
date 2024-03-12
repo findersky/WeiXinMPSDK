@@ -1,7 +1,7 @@
 ﻿#region Apache License Version 2.0
 /*----------------------------------------------------------------
 
-Copyright 2023 Jeffrey Su & Suzhou Senparc Network Technology Co.,Ltd.
+Copyright 2024 Jeffrey Su & Suzhou Senparc Network Technology Co.,Ltd.
 
 Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
 except in compliance with the License. You may obtain a copy of the License at
@@ -224,7 +224,7 @@ namespace Senparc.Weixin.MP.Test.AdvancedAPIs.Template
         public void AddtemplateTest()
         {
             var accessToken = AccessTokenContainer.GetAccessToken(_appId);
-            var result = TemplateApi.Addtemplate(accessToken, "OPENTM207498902");
+            var result = TemplateApi.AddTemplate(accessToken, "OPENTM207498902", null);
             Assert.AreEqual(ReturnCode.请求成功, result.errcode);
             Assert.IsNotNull(result.template_id);
             Console.WriteLine(result.template_id);
@@ -246,7 +246,7 @@ namespace Senparc.Weixin.MP.Test.AdvancedAPIs.Template
             //var accessToken = AccessTokenContainer.GetAccessToken(_appId);
 
             //添加模板
-            var addResult = TemplateApi.Addtemplate(_appId, "OPENTM206164559");
+            var addResult = TemplateApi.AddTemplate(_appId, "OPENTM206164559", null);
             var templateId = addResult.template_id;
             Assert.IsNotNull(templateId);
 

@@ -1,5 +1,5 @@
 /*----------------------------------------------------------------
-    Copyright (C) 2023 Senparc
+    Copyright (C) 2024 Senparc
     
     文件名：WorkMessageHandler.cs
     文件功能描述：企业号请求的集中处理方法
@@ -330,6 +330,36 @@ namespace Senparc.Weixin.Work.MessageHandlers
                             responseMessage = await
                                 OnEvent_ChangeExternalChatDismissRequestAsync(
                                     RequestMessage as RequestMessageEvent_Change_External_Chat_Dismiss);
+                            break;
+                        default:
+                            throw new UnknownRequestMsgTypeException("未知的企业客户标签变更事件Event.CHANGE_EXTERNAL_Tag下属请求信息",
+                                null);
+                    }
+
+                    break;
+                case Event.CHANGE_EXTERNAL_TAG: //企业客户标签变更事件
+                    var tag = RequestMessage as RequestMessageEvent_Change_External_Tag_Base;
+                    switch (tag.ChangeType)
+                    {
+                        case ExternalTagChangeType.create:
+                            responseMessage = await
+                                OnEvent_ChangeExternalTagCreateRequestAsync(
+                                    RequestMessage as RequestMessageEvent_Change_External_Tag_Create);
+                            break;
+                        case ExternalTagChangeType.update:
+                            responseMessage = await
+                                OnEvent_ChangeExternalTagUpdateRequestAsync(
+                                    RequestMessage as RequestMessageEvent_Change_External_Tag_Update);
+                            break;
+                        case ExternalTagChangeType.delete:
+                            responseMessage = await
+                                OnEvent_ChangeExternalTagDeleteRequestAsync(
+                                    RequestMessage as RequestMessageEvent_Change_External_Tag_Delete);
+                            break;
+                        case ExternalTagChangeType.shuffle:
+                            responseMessage = await
+                                OnEvent_ChangeExternalTagShuffleRequestAsync(
+                                    RequestMessage as RequestMessageEvent_Change_External_Tag_Shuffle);
                             break;
                         default:
                             throw new UnknownRequestMsgTypeException("未知的客户群变更事件Event.CHANGE_EXTERNAL_CHAT下属请求信息",
@@ -670,6 +700,53 @@ namespace Senparc.Weixin.Work.MessageHandlers
         {
             return await Task.Run(() => OnEvent_ChangeExternalChatDismissRequest(requestMessage)).ConfigureAwait(false);
         }
+
+        #region 企业客户标签事件
+        /// <summary>
+        /// 企业客户标签-创建
+        /// </summary>
+        /// <param name="requestMessage"></param>
+        /// <returns></returns>
+        public virtual async Task<IWorkResponseMessageBase> OnEvent_ChangeExternalTagCreateRequestAsync(
+            RequestMessageEvent_Change_External_Tag_Create requestMessage)
+        {
+            return await Task.Run(() => OnEvent_ChangeExternalTagCreateRequest(requestMessage)).ConfigureAwait(false);
+        }
+
+
+        /// <summary>
+        /// 企业客户标签-变更
+        /// </summary>
+        /// <param name="requestMessage"></param>
+        /// <returns></returns>
+        public virtual async Task<IWorkResponseMessageBase> OnEvent_ChangeExternalTagUpdateRequestAsync(
+            RequestMessageEvent_Change_External_Tag_Update requestMessage)
+        {
+            return await Task.Run(() => OnEvent_ChangeExternalTagUpdateRequest(requestMessage)).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// 企业客户标签-删除
+        /// </summary>
+        /// <param name="requestMessage"></param>
+        /// <returns></returns>
+        public virtual async Task<IWorkResponseMessageBase> OnEvent_ChangeExternalTagDeleteRequestAsync(
+            RequestMessageEvent_Change_External_Tag_Delete requestMessage)
+        {
+            return await Task.Run(() => OnEvent_ChangeExternalTagDeleteRequest(requestMessage)).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// 企业客户标签-重排
+        /// </summary>
+        /// <param name="requestMessage"></param>
+        /// <returns></returns>
+        public virtual async Task<IWorkResponseMessageBase> OnEvent_ChangeExternalTagShuffleRequestAsync(
+            RequestMessageEvent_Change_External_Tag_Shuffle requestMessage)
+        {
+            return await Task.Run(() => OnEvent_ChangeExternalTagShuffleRequest(requestMessage)).ConfigureAwait(false);
+        }
+        #endregion
 
         public virtual async Task<IWorkResponseMessageBase> OnEvent_Living_Status_ChangeRequestAsync(
             RequestMessageEvent_Living_Status_Change_Base requestMessage)

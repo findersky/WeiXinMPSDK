@@ -1,7 +1,7 @@
 ﻿#region Apache License Version 2.0
 /*----------------------------------------------------------------
 
-Copyright 2023 Jeffrey Su & Suzhou Senparc Network Technology Co.,Ltd.
+Copyright 2024 Jeffrey Su & Suzhou Senparc Network Technology Co.,Ltd.
 
 Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
 except in compliance with the License. You may obtain a copy of the License at
@@ -19,7 +19,7 @@ Detail: https://github.com/JeffreySu/WeiXinMPSDK/blob/master/license.md
 #endregion Apache License Version 2.0
 
 /*----------------------------------------------------------------
-    Copyright (C) 2023 Senparc
+    Copyright (C) 2024 Senparc
 
     文件名：CommonJsonSend.cs
     文件功能描述：通过CommonJsonSend中的方法调用接口
@@ -41,6 +41,9 @@ Detail: https://github.com/JeffreySu/WeiXinMPSDK/blob/master/license.md
 
     修改标识：Senparc - 20230110
     修改描述：v6.15.8 CommonJsonSend.Send() 方法提供 contentType 参数
+
+    修改标识：Senparc - 20231026
+    修改描述：v6.16.6 优化 postFailAction 中的异常记录
 
 ----------------------------------------------------------------*/
 
@@ -104,12 +107,18 @@ namespace Senparc.Weixin.CommonAPIs
                 ErrorJsonResultException ex = null;
                 if (errorResult.errcode != ReturnCode.请求成功)
                 {
+                    var hints = errorResult.Hints?.ToJson();
+                    if (!string.IsNullOrWhiteSpace(hints))
+                    {
+                        hints = $"Hints：{hints}";
+                    }
+
                     //发生错误，记录异常
                     ex = new ErrorJsonResultException(
-                          string.Format("微信 POST 请求发生错误！错误代码：{0}；说明：{1}；Hints：{2}",
+                          string.Format("微信 POST 请求发生错误！错误代码：{0}；说明：{1}；{2}",
                                         (int)errorResult.errcode,
                                         errorResult.errmsg,
-                                        errorResult.Hints?.ToJson()),
+                                        hints),
                           null, errorResult, apiUrl);
                 }
 

@@ -1,7 +1,7 @@
 ﻿#region Apache License Version 2.0
 /*----------------------------------------------------------------
 
-Copyright 2023 Jeffrey Su & Suzhou Senparc Network Technology Co.,Ltd.
+Copyright 2024 Jeffrey Su & Suzhou Senparc Network Technology Co.,Ltd.
 
 Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
 except in compliance with the License. You may obtain a copy of the License at
@@ -19,7 +19,7 @@ Detail: https://github.com/JeffreySu/WeiXinMPSDK/blob/master/license.md
 #endregion Apache License Version 2.0
 
 /*----------------------------------------------------------------
-    Copyright (C) 2023 Senparc
+    Copyright (C) 2024 Senparc
   
     文件名：CompleteServiceOrderRequestData.cs
     文件功能描述：微信支付V3完结支付分订单接口请求数据
@@ -30,6 +30,7 @@ Detail: https://github.com/JeffreySu/WeiXinMPSDK/blob/master/license.md
 ----------------------------------------------------------------*/
 
 
+using Newtonsoft.Json;
 using Senparc.Weixin.TenPayV3.Entities;
 using System;
 using System.Collections.Generic;
@@ -86,6 +87,7 @@ namespace Senparc.Weixin.TenPayV3.Apis.PayScore
         /// <para>path 商户系统内部服务订单号（不是交易单号），与创建订单时一致</para>
         /// <para>示例值：1234323JKHDFE1243252 </para>
         /// </summary>
+        [JsonIgnore]
         public string out_order_no { get; set; }
 
         /// <summary>
