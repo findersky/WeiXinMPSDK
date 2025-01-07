@@ -8,7 +8,6 @@
     创建标识：Senparc - 20150312
 ----------------------------------------------------------------*/
 
-//DPBMARK_FILE MP
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -25,7 +24,7 @@ using Senparc.Weixin.MP.CommonAPIs;
 using System.Text;
 using Senparc.Weixin.MP;
 
-namespace Senparc.Weixin.Sample.Net6.Controllers
+namespace Senparc.Weixin.Sample.Net8.Controllers
 {
     public class OAuth2Controller : BaseController
     {

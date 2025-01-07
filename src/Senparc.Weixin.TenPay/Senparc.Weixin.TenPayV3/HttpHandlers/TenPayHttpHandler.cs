@@ -30,20 +30,20 @@ Detail: https://github.com/JeffreySu/WeiXinMPSDK/blob/master/license.md
     修改标识：Senparc - 20210822
     修改描述：重构使用ISenparcWeixinSettingForTenpayV3初始化实例
 
+    修改标识：MartyZane - 20240530
+    修改描述：TenPayV3Setting里面增加AuthrizationType属性，用于设置认证类型，选项有WECHATPAY2-SHA256-RSA2048、WECHATPAY2-SM2-WITH-SM3，默认为WECHATPAY2-SM2-WITH-SM3
     
 ----------------------------------------------------------------*/
 
-using Senparc.Weixin.Entities;
-using Senparc.Weixin.TenPayV3.Helpers;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Net.Http;
-using System.Security.Cryptography;
-using System.Text;
+using System.Reflection.Emit;
 using System.Threading;
 using System.Threading.Tasks;
+using Org.BouncyCastle.Crypto.Parameters;
+using Senparc.Weixin.Entities;
+using Senparc.Weixin.TenPayV3.Helpers;
 
 namespace Senparc.Weixin.TenPayV3
 {
@@ -86,7 +86,13 @@ namespace Senparc.Weixin.TenPayV3
             CancellationToken cancellationToken)
         {
             var auth = await BuildAuthAsync(request);
-            string value = $"WECHATPAY2-SHA256-RSA2048 {auth}";
+
+            var authorizationValue =
+                _tenpayV3Setting.EncryptionType == CertType.SM.ToString()
+                    ? "WECHATPAY2-SM2-WITH-SM3"
+                    : "WECHATPAY2-SHA256-RSA2048";
+
+            string value = $"{authorizationValue} {auth}";
             request.Headers.Add("Authorization", value);
 
             return await base.SendAsync(request, cancellationToken);
@@ -118,7 +124,21 @@ namespace Senparc.Weixin.TenPayV3
             //return $"mchid=\"{merchantId}\",nonce_str=\"{nonce}\",timestamp=\"{timestamp}\",serial_no=\"{serialNo}\",signature=\"{signature}\"";
 
             //TODO:此处重构使用ISenparcWeixinSettingForTenpayV3
-            string signature = TenPaySignHelper.CreateSign(message, _tenpayV3Setting.TenPayV3_PrivateKey);
+            string signature = string.Empty;
+            if(_tenpayV3Setting.EncryptionType == CertType.SM.ToString())
+            {
+                byte[] keyData = Convert.FromBase64String(_tenpayV3Setting.TenPayV3_PrivateKey);
+
+                ECPrivateKeyParameters eCPrivateKeyParameters = SMPemHelper.LoadPrivateKeyToParameters(keyData);
+
+                byte[] signBytes = GmHelper.SignSm3WithSm2(eCPrivateKeyParameters, message);
+
+                signature = Convert.ToBase64String(signBytes);
+            }
+            else
+            {
+                signature = TenPaySignHelper.CreateSign(message, _tenpayV3Setting.TenPayV3_PrivateKey);
+            }
 
             return $"mchid=\"{_tenpayV3Setting.TenPayV3_MchId}\",nonce_str=\"{nonce}\",timestamp=\"{timestamp}\",serial_no=\"{_tenpayV3Setting.TenPayV3_SerialNumber}\",signature=\"{signature}\"";
         }

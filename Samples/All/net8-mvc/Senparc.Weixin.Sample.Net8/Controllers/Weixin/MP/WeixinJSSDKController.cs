@@ -1,5 +1,4 @@
-﻿//DPBMARK_FILE MP
-using Senparc.Weixin.MP.CommonAPIs;
+﻿using Senparc.Weixin.MP.CommonAPIs;
 using Senparc.Weixin.MP.Helpers;
 using System;
 using System.Collections.Generic;
@@ -10,7 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
 using System.Threading.Tasks;
 
-namespace Senparc.Weixin.Sample.Net6.Controllers
+namespace Senparc.Weixin.Sample.Net8.Controllers
 {
     /// <summary>
     /// JSSDK的演示

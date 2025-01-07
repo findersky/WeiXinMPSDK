@@ -8,7 +8,6 @@
     创建标识：Senparc - 20150312
 ----------------------------------------------------------------*/
 
-//DPBMARK_FILE MP
 using Senparc.CO2NET.Extensions;
 using Senparc.CO2NET.Utilities;
 using Senparc.NeuChar.Agents;
@@ -17,6 +16,7 @@ using Senparc.Weixin.MP;
 using Senparc.Weixin.MP.AdvancedAPIs;
 using Senparc.Weixin.MP.Entities;
 using System.Diagnostics;
+using System.Threading.Tasks;
 
 
 namespace Senparc.Weixin.Sample.MP

@@ -8,7 +8,6 @@
     创建标识：Senparc - 20150312
 ----------------------------------------------------------------*/
 
-//DPBMARK_FILE MP
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -20,7 +19,7 @@ using System.Xml.Linq;
 using Senparc.Weixin.MP.MessageHandlers;
 using Senparc.Weixin.Sample.CommonService;
 
-namespace Senparc.Weixin.Sample.Net6.Controllers
+namespace Senparc.Weixin.Sample.Net8.Controllers
 {
     using Senparc.CO2NET.Utilities;
     using Senparc.NeuChar;

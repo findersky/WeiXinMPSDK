@@ -35,6 +35,7 @@ Detail: https://github.com/JeffreySu/WeiXinMPSDK/blob/master/license.md
     
 ----------------------------------------------------------------*/
 
+using Org.BouncyCastle.Crypto.Parameters;
 using Senparc.CO2NET.Extensions;
 using Senparc.CO2NET.Helpers;
 using Senparc.CO2NET.Trace;
@@ -86,7 +87,9 @@ namespace Senparc.Weixin.TenPayV3
 
             // 外部
             if (_setHeaderAction != null)
+            {
                 _setHeaderAction(client);
+            }
         }
 
         /// <summary>
@@ -228,7 +231,20 @@ namespace Senparc.Weixin.TenPayV3
                             try
                             {
                                 var pubKey = await TenPayV3InfoCollection.GetAPIv3PublicKeyAsync(this._tenpayV3Setting, wechatpaySerial);
-                                result.VerifySignSuccess = TenPaySignHelper.VerifyTenpaySign(wechatpayTimestamp, wechatpayNonce, wechatpaySignatureBase64, content, pubKey);
+                                if (this._tenpayV3Setting.EncryptionType == CertType.SM.ToString())
+                                {
+                                    byte[] pubKeyBytes = Convert.FromBase64String(pubKey);
+                                    ECPublicKeyParameters eCPublicKeyParameters = SMPemHelper.LoadPublicKeyToParameters(pubKeyBytes);
+
+                                    //验签名串
+                                    string contentForSign = $"{wechatpayTimestamp}\n{wechatpayNonce}\n{content}\n";
+
+                                    result.VerifySignSuccess = GmHelper.VerifySm3WithSm2(eCPublicKeyParameters, contentForSign, wechatpaySignatureBase64);
+                                }
+                                else
+                                {
+                                    result.VerifySignSuccess = TenPaySignHelper.VerifyTenpaySign(wechatpayTimestamp, wechatpayNonce, wechatpaySignatureBase64, content, pubKey, _tenpayV3Setting.TenPayV3_TenPayPubKeyEnable);
+                                }
                             }
                             catch (Exception ex)
                             {

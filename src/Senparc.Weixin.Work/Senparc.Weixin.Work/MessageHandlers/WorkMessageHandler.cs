@@ -68,6 +68,15 @@
 
     修改标识：XiaoPoTian - 20231119
     修改描述：v3.18.1 添加 RequestMessageEvent_Change_External_Tag_Base 事件中 ChangeType 的判断
+    
+    修改标识：IcedMango - 20240229
+    修改描述：添加: 企业微信会话存档-产生会话回调事件
+
+    修改标识：LofyLiu - 20240315
+    修改描述：添加: 模板卡片点击回调事件
+    
+    修改标识: IcedMango - 20241114
+    修改描述: 添加: 通用模板卡片右上角菜单事件推送; 修复不正确的通用模板卡片事件推送类型
 ----------------------------------------------------------------*/
 
 using System;
@@ -883,6 +892,36 @@ namespace Senparc.Weixin.Work.MessageHandlers
             return DefaultResponseMessage(requestMessage);
         }
         #endregion
+        
+        /// <summary>
+        /// 企业微信会话存档-产生会话回调事件
+        /// </summary>
+        /// <param name="requestMessage"></param>
+        /// <returns></returns>
+        public virtual IWorkResponseMessageBase OnEvent_MsgAuditNotifyRequest(RequestMessageEvent_MsgAuditNotify requestMessage)
+        {
+            return DefaultResponseMessage(requestMessage);
+        }
+
+        /// <summary>
+        ///     模板卡片事件推送
+        /// </summary>
+        /// <param name="requestMessage"></param>
+        /// <returns></returns>
+        public virtual IWorkResponseMessageBase OnEvent_TemplateCardEventRequest(RequestMessageEvent_TemplateCardEvent requestMessage)
+        {
+            return DefaultResponseMessage(requestMessage);
+        }
+        
+        /// <summary>
+        ///     通用模板卡片右上角菜单事件推送
+        /// </summary>
+        /// <param name="requestMessage"></param>
+        /// <returns></returns>
+        public virtual IWorkResponseMessageBase OnEvent_TemplateCardMenuEventRequest(RequestMessageEvent_TemplateCardMenuEvent requestMessage)
+        {
+            return DefaultResponseMessage(requestMessage);
+        }
 
         #endregion //Event 下属分类
         #endregion

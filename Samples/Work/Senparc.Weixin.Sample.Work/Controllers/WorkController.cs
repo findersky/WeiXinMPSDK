@@ -22,7 +22,6 @@
  */
 
 
-//DPBMARK_FILE Work
 using Microsoft.AspNetCore.Mvc;
 using Senparc.CO2NET.AspNet.HttpUtility;
 using Senparc.CO2NET.Utilities;
@@ -31,7 +30,7 @@ using Senparc.Weixin.Sample.Work.MessageHandlers;
 using Senparc.Weixin.Work;
 using Senparc.Weixin.Work.Entities;
 
-namespace Senparc.Weixin.Sample.Net6.Controllers
+namespace Senparc.Weixin.Sample.Net8.Controllers
 {
     /// <summary>
     /// 企业号对接测试

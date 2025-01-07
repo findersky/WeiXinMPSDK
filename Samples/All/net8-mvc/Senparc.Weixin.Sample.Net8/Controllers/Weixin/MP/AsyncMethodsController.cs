@@ -1,5 +1,4 @@
-﻿//DPBMARK_FILE MP
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Senparc.CO2NET.Cache;
 using Senparc.CO2NET.Extensions;
 using Senparc.CO2NET.HttpUtility;
@@ -9,7 +8,7 @@ using Senparc.Weixin.MP.AdvancedAPIs.TemplateMessage;
 using System;
 using System.Threading.Tasks;
 
-namespace Senparc.Weixin.Sample.Net6.Controllers
+namespace Senparc.Weixin.Sample.Net8.Controllers
 {
     public class AsyncMethodsController : BaseController
     {

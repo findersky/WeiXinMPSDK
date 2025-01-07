@@ -1,5 +1,4 @@
-﻿//DPBMARK_FILE MP
-using Senparc.Weixin.MP.Helpers;
+﻿using Senparc.Weixin.MP.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -9,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Senparc.Weixin.MP.Containers;
 using Microsoft.AspNetCore.Http;
 
-namespace Senparc.Weixin.Sample.Net6.Controllers
+namespace Senparc.Weixin.Sample.Net8.Controllers
 {
     /// <summary>
     /// 设备能力测试

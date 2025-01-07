@@ -14,7 +14,6 @@
 
 /* 注意：TenpayApiV3Controller 为真正微信支付 API V3 的示例 */
 
-//DPBMARK_FILE TenPay
 using System.Collections.Concurrent;
 using System.Text;
 using Microsoft.AspNetCore.Mvc;
@@ -24,7 +23,7 @@ using Senparc.CO2NET.Utilities;
 using Senparc.Weixin.Exceptions;
 using Senparc.Weixin.Helpers;
 using Senparc.Weixin.MP.AdvancedAPIs;
-//DPBMARK MP
+
 using Senparc.Weixin.Sample.TenPayV3.Filters;
 using Senparc.Weixin.Sample.TenPayV3.Models;
 using Senparc.Weixin.Sample.TenPayV3.Utilities;
@@ -94,7 +93,7 @@ namespace Senparc.Weixin.Sample.TenPayV3.Controllers
             var state = string.Format("{0}|{1}", productId, hc);
             string url = null;
 
-            url = OAuthApi.GetAuthorizeUrl(TenPayV3Info.AppId, returnUrl, state, OAuthScope.snsapi_userinfo);//   -- DPBMARK MP DPBMARK_END
+            url = OAuthApi.GetAuthorizeUrl(TenPayV3Info.AppId, returnUrl, state, OAuthScope.snsapi_userinfo);//
 
             if (url.IsNullOrEmpty())
             {
@@ -208,7 +207,7 @@ namespace Senparc.Weixin.Sample.TenPayV3.Controllers
 
         #endregion
 
-        //DPBMARK MP
+        
         #region OAuth授权
         public ActionResult OAuthCallback(string code, string state, string returnUrl)
         {
@@ -325,7 +324,7 @@ namespace Senparc.Weixin.Sample.TenPayV3.Controllers
             {
                 //获取微信服务器异步发送的支付通知信息
                 var resHandler = new TenPayNotifyHandler(HttpContext);
-                var orderReturnJson = await resHandler.AesGcmDecryptGetObjectAsync<OrderReturnJson>();
+                var orderReturnJson = await resHandler.DecryptGetObjectAsync<OrderReturnJson>();
 
                 //记录日志
                 Senparc.Weixin.WeixinTrace.SendCustomLog("PayNotifyUrl 接收到消息", orderReturnJson.ToJson(true));
@@ -553,7 +552,7 @@ namespace Senparc.Weixin.Sample.TenPayV3.Controllers
             try
             {
                 var resHandler = new TenPayNotifyHandler(HttpContext);
-                var refundNotifyJson = await resHandler.AesGcmDecryptGetObjectAsync<RefundNotifyJson>();
+                var refundNotifyJson = await resHandler.DecryptGetObjectAsync<RefundNotifyJson>();
 
                 WeixinTrace.SendCustomLog("跟踪RefundNotifyUrl信息", refundNotifyJson.ToJson());
 

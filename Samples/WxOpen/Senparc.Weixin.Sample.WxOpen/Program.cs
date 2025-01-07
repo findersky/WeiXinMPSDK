@@ -1,3 +1,9 @@
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using System.IO;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -9,7 +15,7 @@ builder.Services.AddMemoryCache();
 #region 添加微信配置（一行代码）
 
 //Senparc.Weixin 注册（必须）
-builder.Services.AddSenparcWeixinServices(builder.Configuration);
+builder.Services.AddSenparcWeixin(builder.Configuration);
 
 #endregion
 

@@ -14,7 +14,6 @@
 
 /* 注意：TenPayApiV3Controller 为真正微信支付 API V3 的示例 */
 
-//DPBMARK_FILE TenPay
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Senparc.CO2NET.Extensions;
@@ -22,8 +21,8 @@ using Senparc.CO2NET.Utilities;
 using Senparc.Weixin.Entities;
 using Senparc.Weixin.Exceptions;
 using Senparc.Weixin.Helpers;
-using Senparc.Weixin.Sample.Net6.Controllers;
-using Senparc.Weixin.Sample.Net6.Models;
+using Senparc.Weixin.Sample.Net8.Controllers;
+using Senparc.Weixin.Sample.Net8.Models;
 using Senparc.Weixin.TenPayV3;
 using Senparc.Weixin.TenPayV3.Apis;
 using Senparc.Weixin.TenPayV3.Apis.BasePay;
@@ -37,17 +36,16 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
-//DPBMARK MP
 using Senparc.Weixin.MP;
-using Senparc.Weixin.Sample.Net6.Filters;
+using Senparc.Weixin.Sample.Net8.Filters;
 using Senparc.Weixin.MP.AdvancedAPIs;
 using Senparc.Weixin.Sample.CommonService.TemplateMessage;
 using Senparc.Weixin.Sample.CommonService.Utilities;
 using Senparc.CO2NET.HttpUtility;
+using Senparc.CO2NET.Trace;
 //DPBMARK_END
 
-namespace Senparc.Weixin.Sample.Net6.Controllers
+namespace Senparc.Weixin.Sample.Net8.Controllers
 {
     public class TenPayApiV3Controller : BaseController
     {
@@ -105,7 +103,7 @@ namespace Senparc.Weixin.Sample.Net6.Controllers
             var state = string.Format("{0}|{1}", productId, hc);
             string url = null;
 
-            url = OAuthApi.GetAuthorizeUrl(TenPayV3Info.AppId, returnUrl, state, OAuthScope.snsapi_userinfo);//   -- DPBMARK MP DPBMARK_END
+            url = OAuthApi.GetAuthorizeUrl(TenPayV3Info.AppId, returnUrl, state, OAuthScope.snsapi_userinfo);//
 
             if (url.IsNullOrEmpty())
             {
@@ -219,7 +217,7 @@ namespace Senparc.Weixin.Sample.Net6.Controllers
 
         #endregion
 
-        //DPBMARK MP
+
         #region OAuth授权
         public ActionResult OAuthCallback(string code, string state, string returnUrl)
         {
@@ -296,7 +294,6 @@ namespace Senparc.Weixin.Sample.Net6.Controllers
                 var price = product == null ? 100 : (int)(product.Price * 100);//单位：分
                 var notifyUrl = TenPayV3Info.TenPayV3Notify.Replace("/TenpayV3/", "/TenPayApiV3/").Replace("http://", "https://");
 
-               
 
                 //请求信息
                 TransactionsRequestData jsApiRequestData = new(TenPayV3Info.AppId, TenPayV3Info.MchId, name + " - 微信支付 V3", sp_billno, new TenpayDateTime(DateTime.Now.AddHours(1), false), null, notifyUrl, null, new() { currency = "CNY", total = price }, new(openId), null, null, null);
@@ -307,6 +304,7 @@ namespace Senparc.Weixin.Sample.Net6.Controllers
 
                 if (result.VerifySignSuccess != true)
                 {
+                    SenparcTrace.SendCustomLog("basePayApis2.JsApiAsync 接口出错", $" JsApiReturnJson 返回结果：{result.ToJson(true)}");
                     throw new WeixinException("获取 prepay_id 结果校验出错！");
                 }
 
@@ -338,10 +336,10 @@ namespace Senparc.Weixin.Sample.Net6.Controllers
             {
                 //获取微信服务器异步发送的支付通知信息
                 var resHandler = new TenPayNotifyHandler(HttpContext);
-                var orderReturnJson = await resHandler.AesGcmDecryptGetObjectAsync<OrderReturnJson>();
+                var orderReturnJson = await resHandler.DecryptGetObjectAsync<OrderReturnJson>();
 
                 //记录日志
-                Senparc.Weixin.WeixinTrace.SendCustomLog("PayNotifyUrl 接收到消息", orderReturnJson.ToJson(true));
+                Senparc.Weixin.WeixinTrace.SendCustomLog("PayNotifyUrl 接收到消息（ApiV3）", orderReturnJson.ToJson(true));
 
                 //演示记录 transaction_id，实际开发中需要记录到数据库，以便退款和后续跟踪
                 TradeNumberToTransactionId[orderReturnJson.out_trade_no] = orderReturnJson.transaction_id;
@@ -389,13 +387,13 @@ namespace Senparc.Weixin.Sample.Net6.Controllers
 
                 #region 记录日志（也可以记录到数据库审计日志中）
 
-                var logDir = ServerUtility.ContentRootMapPath(string.Format("~/App_Data/TenPayNotify/{0}", SystemTime.Now.ToString("yyyyMMdd")));
+                var logDir = ServerUtility.ContentRootMapPath(string.Format("~/App_Data/TenPayNotify/ApiV3{0}", SystemTime.Now.ToString("yyyyMMdd")));
                 if (!Directory.Exists(logDir))
                 {
                     Directory.CreateDirectory(logDir);
                 }
 
-                var logPath = Path.Combine(logDir, string.Format("{0}-{1}-{2}.txt", SystemTime.Now.ToString("yyyyMMdd"), SystemTime.Now.ToString("HHmmss"), Guid.NewGuid().ToString("n").Substring(0, 8)));
+                var logPath = Path.Combine(logDir, string.Format("ApiV3-{0}-{1}-{2}.txt", SystemTime.Now.ToString("yyyyMMdd"), SystemTime.Now.ToString("HHmmss"), Guid.NewGuid().ToString("n").Substring(0, 8)));
 
                 using (var fileStream = System.IO.File.OpenWrite(logPath))
                 {
@@ -581,7 +579,7 @@ namespace Senparc.Weixin.Sample.Net6.Controllers
             try
             {
                 var resHandler = new TenPayNotifyHandler(HttpContext);
-                var refundNotifyJson = await resHandler.AesGcmDecryptGetObjectAsync<RefundNotifyJson>();
+                var refundNotifyJson = await resHandler.DecryptGetObjectAsync<RefundNotifyJson>();
 
                 WeixinTrace.SendCustomLog("跟踪RefundNotifyUrl信息", refundNotifyJson.ToJson());
 

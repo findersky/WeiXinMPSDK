@@ -12,7 +12,6 @@
     修改描述：优化消息模拟功能 
 ----------------------------------------------------------------*/
 
-//DPBMARK_FILE MP
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -37,7 +36,7 @@ using Senparc.CO2NET.Cache;
 using System.Linq;
 using Microsoft.AspNetCore.Http;
 
-namespace Senparc.Weixin.Sample.Net6.Controllers
+namespace Senparc.Weixin.Sample.Net8.Controllers
 {
     /// <summary>
     /// 消息模拟器
