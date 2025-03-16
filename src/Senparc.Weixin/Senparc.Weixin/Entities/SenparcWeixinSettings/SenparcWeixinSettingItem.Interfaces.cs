@@ -19,7 +19,7 @@ Detail: https://github.com/JeffreySu/WeiXinMPSDK/blob/master/license.md
 #endregion Apache License Version 2.0
 
 /*----------------------------------------------------------------
-    Copyright (C) 2024 Senparc
+    Copyright (C) 2025 Senparc
     
     文件名：SenparcWeixinSettingItem.Interfaces.cs
     文件功能描述：SenparcWeixinSettingItem 接口
@@ -245,7 +245,7 @@ namespace Senparc.Weixin.Entities
         /// <summary>
         /// 设置HTTP头Authrization的加密认证类型
         /// </summary>
-        string EncryptionType { get; set; }
+        CertType? EncryptionType { get; set; }
     }
 
     /// <summary>

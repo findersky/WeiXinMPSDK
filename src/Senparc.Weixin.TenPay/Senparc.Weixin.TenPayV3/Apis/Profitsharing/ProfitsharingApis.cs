@@ -1,7 +1,7 @@
 ﻿#region Apache License Version 2.0
 /*----------------------------------------------------------------
 
-Copyright 2024 Jeffrey Su & Suzhou Senparc Network Technology Co.,Ltd.
+Copyright 2025 Jeffrey Su & Suzhou Senparc Network Technology Co.,Ltd.
 
 Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
 except in compliance with the License. You may obtain a copy of the License at
@@ -19,7 +19,7 @@ Detail: https://github.com/JeffreySu/WeiXinMPSDK/blob/master/license.md
 #endregion Apache License Version 2.0
 
 /*----------------------------------------------------------------
-    Copyright (C) 2024 Senparc
+    Copyright (C) 2025 Senparc
   
     文件名：ProfitsharingApis.cs
     文件功能描述：微信支付V3分账接口
@@ -115,7 +115,7 @@ namespace Senparc.Weixin.TenPayV3.Apis
             var publicKeyKv = publicKeys.FirstOrDefault();
             foreach (var each in data.receivers)
             {
-                SecurityHelper.FieldEncrypt(each, publicKeyKv.Value, _tenpayV3Setting.EncryptionType, _tenpayV3Setting.TenPayV3_TenPayPubKeyEnable);
+                SecurityHelper.FieldEncrypt(each, publicKeyKv.Value, _tenpayV3Setting.EncryptionType.Value, _tenpayV3Setting.TenPayV3_TenPayPubKeyEnable);
             }
 
             //string algorithmType = _tenpayV3Setting.EncryptionType == CertType.SM.ToString() ? "SM2" : "RSA";
@@ -324,7 +324,7 @@ namespace Senparc.Weixin.TenPayV3.Apis
             var basePayApis = new BasePayApis();
             var publicKeys = await basePayApis.GetPublicKeysAsync();
             var publicKeyKv = publicKeys.FirstOrDefault();
-            SecurityHelper.FieldEncrypt(data, publicKeyKv.Value, _tenpayV3Setting.EncryptionType, _tenpayV3Setting.TenPayV3_TenPayPubKeyEnable);
+            SecurityHelper.FieldEncrypt(data, publicKeyKv.Value, _tenpayV3Setting.EncryptionType.Value, _tenpayV3Setting.TenPayV3_TenPayPubKeyEnable);
 
             //string algorithmType = _tenpayV3Setting.EncryptionType == CertType.SM.ToString() ? "SM2" : "RSA";
             //var certificateResponse = await basePayApis.CertificatesAsync(algorithmType);

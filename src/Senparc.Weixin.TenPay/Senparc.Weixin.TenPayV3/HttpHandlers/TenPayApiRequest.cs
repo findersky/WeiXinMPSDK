@@ -1,7 +1,7 @@
 ﻿#region Apache License Version 2.0
 /*----------------------------------------------------------------
 
-Copyright 2024 Jeffrey Su & Suzhou Senparc Network Technology Co.,Ltd.
+Copyright 2025 Jeffrey Su & Suzhou Senparc Network Technology Co.,Ltd.
 
 Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
 except in compliance with the License. You may obtain a copy of the License at
@@ -19,7 +19,7 @@ Detail: https://github.com/JeffreySu/WeiXinMPSDK/blob/master/license.md
 #endregion Apache License Version 2.0
 
 /*----------------------------------------------------------------
-    Copyright (C) 2024 Senparc
+    Copyright (C) 2025 Senparc
   
     文件名：TenPayApiRequest.cs
     文件功能描述：微信支付V3接口请求
@@ -231,7 +231,7 @@ namespace Senparc.Weixin.TenPayV3
                             try
                             {
                                 var pubKey = await TenPayV3InfoCollection.GetAPIv3PublicKeyAsync(this._tenpayV3Setting, wechatpaySerial);
-                                if (this._tenpayV3Setting.EncryptionType == CertType.SM.ToString())
+                                if (this._tenpayV3Setting.EncryptionType == CertType.SM)
                                 {
                                     byte[] pubKeyBytes = Convert.FromBase64String(pubKey);
                                     ECPublicKeyParameters eCPublicKeyParameters = SMPemHelper.LoadPublicKeyToParameters(pubKeyBytes);
@@ -243,7 +243,7 @@ namespace Senparc.Weixin.TenPayV3
                                 }
                                 else
                                 {
-                                    result.VerifySignSuccess = TenPaySignHelper.VerifyTenpaySign(wechatpayTimestamp, wechatpayNonce, wechatpaySignatureBase64, content, pubKey, _tenpayV3Setting.TenPayV3_TenPayPubKeyEnable);
+                                    result.VerifySignSuccess = TenPaySignHelper.VerifyTenpaySign(_tenpayV3Setting.EncryptionType.Value, wechatpayTimestamp, wechatpayNonce, wechatpaySignatureBase64, content, pubKey, _tenpayV3Setting.TenPayV3_TenPayPubKeyEnable);
                                 }
                             }
                             catch (Exception ex)

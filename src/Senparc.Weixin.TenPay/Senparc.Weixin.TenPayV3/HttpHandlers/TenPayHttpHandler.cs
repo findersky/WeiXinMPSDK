@@ -1,7 +1,7 @@
 ﻿#region Apache License Version 2.0
 /*----------------------------------------------------------------
 
-Copyright 2024 Jeffrey Su & Suzhou Senparc Network Technology Co.,Ltd.
+Copyright 2025 Jeffrey Su & Suzhou Senparc Network Technology Co.,Ltd.
 
 Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
 except in compliance with the License. You may obtain a copy of the License at
@@ -19,7 +19,7 @@ Detail: https://github.com/JeffreySu/WeiXinMPSDK/blob/master/license.md
 #endregion Apache License Version 2.0
 
 /*----------------------------------------------------------------
-    Copyright (C) 2024 Senparc
+    Copyright (C) 2025 Senparc
   
     文件名：TenPayHttpHandler.cs
     文件功能描述：微信支付V3 HttpHandler
@@ -73,6 +73,11 @@ namespace Senparc.Weixin.TenPayV3
             InnerHandler = new HttpClientHandler();
 
             _tenpayV3Setting = senparcWeixinSettingForTenpayV3 ?? Senparc.Weixin.Config.SenparcWeixinSetting.TenpayV3Setting;
+
+            if (!_tenpayV3Setting.EncryptionType.HasValue)
+            {
+                throw new Senparc.Weixin.Exceptions.WeixinException("没有设置证书加密类型（EncryptionType）");
+            }
         }
 
         /// <summary>
@@ -88,7 +93,7 @@ namespace Senparc.Weixin.TenPayV3
             var auth = await BuildAuthAsync(request);
 
             var authorizationValue =
-                _tenpayV3Setting.EncryptionType == CertType.SM.ToString()
+                _tenpayV3Setting.EncryptionType == CertType.SM
                     ? "WECHATPAY2-SM2-WITH-SM3"
                     : "WECHATPAY2-SHA256-RSA2048";
 
@@ -125,7 +130,7 @@ namespace Senparc.Weixin.TenPayV3
 
             //TODO:此处重构使用ISenparcWeixinSettingForTenpayV3
             string signature = string.Empty;
-            if(_tenpayV3Setting.EncryptionType == CertType.SM.ToString())
+            if (_tenpayV3Setting.EncryptionType == CertType.SM)
             {
                 byte[] keyData = Convert.FromBase64String(_tenpayV3Setting.TenPayV3_PrivateKey);
 
@@ -137,7 +142,7 @@ namespace Senparc.Weixin.TenPayV3
             }
             else
             {
-                signature = TenPaySignHelper.CreateSign(message, _tenpayV3Setting.TenPayV3_PrivateKey);
+                signature = TenPaySignHelper.CreateSign(_tenpayV3Setting.EncryptionType.Value, message, _tenpayV3Setting.TenPayV3_PrivateKey);
             }
 
             return $"mchid=\"{_tenpayV3Setting.TenPayV3_MchId}\",nonce_str=\"{nonce}\",timestamp=\"{timestamp}\",serial_no=\"{_tenpayV3Setting.TenPayV3_SerialNumber}\",signature=\"{signature}\"";

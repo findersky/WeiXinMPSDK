@@ -1,7 +1,7 @@
 ﻿#region Apache License Version 2.0
 /*----------------------------------------------------------------
 
-Copyright 2024 Jeffrey Su & Suzhou Senparc Network Technology Co.,Ltd.
+Copyright 2025 Jeffrey Su & Suzhou Senparc Network Technology Co.,Ltd.
 
 Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
 except in compliance with the License. You may obtain a copy of the License at
@@ -19,7 +19,7 @@ Detail: https://github.com/JeffreySu/WeiXinMPSDK/blob/master/license.md
 #endregion Apache License Version 2.0
 
 /*----------------------------------------------------------------
-    Copyright (C) 2024 Senparc
+    Copyright (C) 2025 Senparc
   
     文件名：TenPayHttpClient.cs
     文件功能描述：TenPayHttpClient
@@ -48,6 +48,7 @@ using Senparc.Weixin.TenPayV3.TenPayHttpClient.Verifier;
 using System;
 using System.IO;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
@@ -108,13 +109,18 @@ namespace Senparc.Weixin.TenPayV3.TenPayHttpClient
         private readonly HttpClient _client;
         private readonly ISigner _signer;
         private readonly IVerifier _verifier;
-        private CertType CertType => _tenpayV3Setting.EncryptionType == "SM" ? CertType.SM : CertType.RSA;
+        private CertType CertType => _tenpayV3Setting.EncryptionType.Value;
 
         public TenPayHttpClient(SenparcHttpClient httpClient, ISenparcWeixinSettingForTenpayV3 senparcWeixinSettingForTenpayV3 = null)
         {
             this._httpClient = httpClient;
             this._client = this._httpClient.Client;
             _tenpayV3Setting = senparcWeixinSettingForTenpayV3 ?? Senparc.Weixin.Config.SenparcWeixinSetting.TenpayV3Setting;
+
+            if (!_tenpayV3Setting.EncryptionType.HasValue)
+            {
+                throw new Senparc.Weixin.Exceptions.WeixinException("没有设置证书加密类型（EncryptionType）");
+            }
 
             //从工厂获得签名和验签的方法类
             _signer = TenPayCertFactory.GetSigner(CertType);
